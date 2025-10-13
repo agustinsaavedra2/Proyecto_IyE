@@ -6,24 +6,19 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-
+@Table(name="Usuarios")
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 
-@Table(name = "usuarios", schema = "globalmanagement",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"email", "empresaid"}))
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "categoriaid", nullable = false)
-    private Long categoriaId;  // FK a categoriaindustria en esquema globalmanagement
-
-    @Column(name = "empresaid", nullable = false)
+    @Column(name = "empresaId", nullable = false)
     private Long empresaId;  // FK a empresas en esquema globalmanagement
 
     @Column(nullable = false, length = 255)
@@ -55,8 +50,7 @@ public class Usuario {
 
     private LocalDateTime deletedat; // Soft delete
 
-    public Usuario(Long categoriaId, Long empresaId, String nombre, String email, String passwordhash, String rol, String departamento, String configuracionnotificaciones) {
-        this.categoriaId = categoriaId;
+    public Usuario(Long empresaId, String nombre, String email, String passwordhash, String rol, String departamento, String configuracionnotificaciones) {
         this.empresaId = empresaId;
         this.nombre = nombre;
         this.email = email;

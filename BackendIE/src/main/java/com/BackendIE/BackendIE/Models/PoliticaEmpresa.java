@@ -7,11 +7,12 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+@Table(name="PoliticasEmpresas")
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "politicasempresas")
+
 public class PoliticaEmpresa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,14 +21,11 @@ public class PoliticaEmpresa {
     @Column(nullable = false)
     private Long empresaid;
 
-    @Column(nullable = false)
-    private Long politicatemplateid;
-
     @Column(length = 255)
-    private String titulopersonalizado;
+    private String titulo;
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String contenidopersonalizado;
+    private String contenido;
 
     private Boolean aigenerada = false;
 
@@ -53,6 +51,19 @@ public class PoliticaEmpresa {
     private LocalDateTime updatedat = LocalDateTime.now();
 
     private LocalDateTime deletedat; // Soft delete
-    // Getters y setters
+
+    public PoliticaEmpresa(Long empresaid, String titulo, String contenido, Boolean aigenerada, String aimodeloversion, Double compliancescore, String estado, String version, Long aprobadopor, LocalDateTime fechaaprobacion) {
+        this.empresaid = empresaid;
+        this.titulo = titulo;
+        this.contenido = contenido;
+        this.aigenerada = aigenerada;
+        this.aimodeloversion = aimodeloversion;
+        this.compliancescore = compliancescore;
+        this.estado = estado;
+        this.version = version;
+        this.aprobadopor = aprobadopor;
+        this.fechaaprobacion = fechaaprobacion;
+
+    }
 }
 

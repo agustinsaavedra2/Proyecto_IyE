@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Table(name="Empresas")
 @Getter
@@ -29,6 +30,9 @@ public class Empresa {
 
     @Column(name = "numEmpleados")
     private Integer numEmpleados;
+
+    @Column(name="empleados")
+    private List<Long> empleados;
 
     @Column(name="ubicacion" )
     private String ubicacion;

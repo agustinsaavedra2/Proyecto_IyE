@@ -17,6 +17,9 @@ public class OllamaResponse {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name="empresaId")
+    private Long empresaId;
+
     @Column(name="usuarioId")
     private Long usuarioId;
 

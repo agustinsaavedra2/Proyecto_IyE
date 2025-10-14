@@ -6,7 +6,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Table(name="Usuarios")
+@Table(name="usuarios")
 @Entity
 @Getter
 @Setter
@@ -28,7 +28,7 @@ public class Usuario {
     private String email;
 
     @Column(nullable = false, length = 255)
-    private String passwordhash;
+    private String passwordHash;
 
     @Column(nullable = false, length = 50)
     private String rol;  // admin, complianceofficer, auditor, viewer
@@ -38,25 +38,22 @@ public class Usuario {
 
     private Boolean activo = true;
 
-    private LocalDateTime ultimoacceso;
-
-    @Column(columnDefinition = "jsonb")
-    private String configuracionnotificaciones;
+    private LocalDateTime ultimoAcceso;
 
     @Column(updatable = false)
-    private LocalDateTime createdat = LocalDateTime.now();
+    private LocalDateTime createDat = LocalDateTime.now();
 
-    private LocalDateTime updatedat = LocalDateTime.now();
+    private LocalDateTime updateDat = LocalDateTime.now();
 
-    private LocalDateTime deletedat; // Soft delete
+    private LocalDateTime deleteDat; // Soft delete
 
-    public Usuario(Long empresaId, String nombre, String email, String passwordhash, String rol, String departamento, String configuracionnotificaciones) {
+    public Usuario(Long empresaId, String nombre, String email, String passwordHash, String rol, String departamento) {
         this.empresaId = empresaId;
         this.nombre = nombre;
         this.email = email;
-        this.passwordhash = passwordhash;
+        this.passwordHash = passwordHash;
         this.rol = rol;
         this.departamento = departamento;
-        this.configuracionnotificaciones = configuracionnotificaciones;
+
     }
 }

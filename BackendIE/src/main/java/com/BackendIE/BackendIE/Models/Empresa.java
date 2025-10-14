@@ -1,18 +1,14 @@
 package com.BackendIE.BackendIE.Models;
 
-
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Table(name="Empresas")
-@Getter
-@Setter
+@Table(name="empresas")
+@Data
 @NoArgsConstructor
+@Entity
 public class Empresa {
 
     @Id
@@ -28,9 +24,8 @@ public class Empresa {
     @Column(name = "codigoEmpresa", unique = true)
     private String codigoEmpresa;
 
-    @Column(name = "numEmpleados")
-    private Integer numEmpleados;
-
+    @ElementCollection
+    @CollectionTable(name="EmpresaEmpleados", joinColumns=@JoinColumn(name="empresaId"))
     @Column(name="empleados")
     private List<Long> empleados;
 
@@ -52,11 +47,11 @@ public class Empresa {
     @Column(name = "deletedAt")
     private LocalDateTime deletedAt; // Soft delete
 
-    public Empresa(Long categoriaId, String nombre, String codigoEmpresa, Integer numEmpleados, String ubicacion, String descripcion, String status) {
+    public Empresa(Long categoriaId, String nombre, String codigoEmpresa, List<Long> empleados, String ubicacion, String descripcion, String status) {
         this.categoriaId = categoriaId;
         this.nombre = nombre;
         this.codigoEmpresa = codigoEmpresa;
-        this.numEmpleados = numEmpleados;
+        this.empleados = empleados;
         this.ubicacion = ubicacion;
         this.descripcion = descripcion;
         this.status = status;

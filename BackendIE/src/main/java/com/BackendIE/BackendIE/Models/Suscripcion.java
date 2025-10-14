@@ -7,7 +7,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-@Table(name="Suscripciones")
+@Table(name="suscripciones")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,7 +24,7 @@ public class Suscripcion {
     private String plan;
 
     @Column(name = "precioMensual")
-    private Double precioMensual;
+    private Double precioMensual = 0.0;
 
     @Column(name = "estado")
     private String estado; // activo, cancelado, pendiente
@@ -47,10 +47,9 @@ public class Suscripcion {
     @Column(name="deletedAt")
     private LocalDateTime deletedAt; // Soft delete
 
-    public Suscripcion(Long empresaId, String plan, Double precioMensual, String estado, Integer maxUsuarios, LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+    public Suscripcion(Long empresaId, String plan, String estado, Integer maxUsuarios, LocalDateTime fechaInicio, LocalDateTime fechaFin) {
         this.empresaId = empresaId;
         this.plan = plan;
-        this.precioMensual = precioMensual;
         this.estado = estado;
         this.maxUsuarios = maxUsuarios;
         this.fechaInicio = fechaInicio;

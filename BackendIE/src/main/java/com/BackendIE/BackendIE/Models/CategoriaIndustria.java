@@ -1,16 +1,14 @@
 package com.BackendIE.BackendIE.Models;
 
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Table(name="CategoriaIndustrias")
-@Setter
-@Getter
+@Table(name="categoriaIndustrias")
+@Data
 @NoArgsConstructor
 public class CategoriaIndustria {
 
@@ -24,8 +22,10 @@ public class CategoriaIndustria {
     @Column(name="descripcion")
     private String descripcion;
 
+    @ElementCollection
+    @CollectionTable(name="CategoriaRegulaciones", joinColumns=@JoinColumn(name="categoriaId"))
     @Column(name="regulaciones")
-    private List<Long> regulaciones;
+    private List<String> regulaciones;
 
     @Column(name="createdAt")
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -36,7 +36,7 @@ public class CategoriaIndustria {
     @Column(name="deletedAt")
     private LocalDateTime deletedAt; // Soft delete
 
-    public CategoriaIndustria(String nombre, String descripcion, List<Long> regulaciones) {
+    public CategoriaIndustria(String nombre, String descripcion, List<String> regulaciones) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.regulaciones = regulaciones;

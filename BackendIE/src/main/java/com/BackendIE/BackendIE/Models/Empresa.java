@@ -36,7 +36,7 @@ public class Empresa {
     private String descripcion;
 
     @Column(name="status")
-    private String status;
+    private String status = "inactive"; // active, inactive, pending
 
     @Column(name = "createdAt")
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -47,14 +47,13 @@ public class Empresa {
     @Column(name = "deletedAt")
     private LocalDateTime deletedAt; // Soft delete
 
-    public Empresa(Long categoriaId, String nombre, String codigoEmpresa, List<Long> empleados, String ubicacion, String descripcion, String status) {
+    public Empresa(Long categoriaId, String nombre, String codigoEmpresa, List<Long> empleados, String ubicacion, String descripcion) {
         this.categoriaId = categoriaId;
         this.nombre = nombre;
         this.codigoEmpresa = codigoEmpresa;
         this.empleados = empleados;
         this.ubicacion = ubicacion;
         this.descripcion = descripcion;
-        this.status = status;
     }
 
 }

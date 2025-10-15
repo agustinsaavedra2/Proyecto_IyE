@@ -18,8 +18,8 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "empresaId", nullable = false)
-    private Long empresaId;  // FK a empresas en esquema globalmanagement
+    @Column(name = "empresaId")
+    private Long empresaId;
 
     @Column(nullable = false, length = 255)
     private String nombre;
@@ -33,9 +33,6 @@ public class Usuario {
     @Column(nullable = false, length = 50)
     private String rol;  // admin, complianceofficer, auditor, viewer
 
-    @Column(length = 100)
-    private String departamento;
-
     private Boolean activo = true;
 
     private LocalDateTime ultimoAcceso;
@@ -47,13 +44,12 @@ public class Usuario {
 
     private LocalDateTime deleteDat; // Soft delete
 
-    public Usuario(Long empresaId, String nombre, String email, String passwordHash, String rol, String departamento) {
+    public Usuario(Long empresaId, String nombre, String email, String passwordHash, String rol) {
         this.empresaId = empresaId;
         this.nombre = nombre;
         this.email = email;
         this.passwordHash = passwordHash;
         this.rol = rol;
-        this.departamento = departamento;
 
     }
 }

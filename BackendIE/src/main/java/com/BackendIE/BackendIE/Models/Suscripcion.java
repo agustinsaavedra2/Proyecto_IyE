@@ -23,17 +23,17 @@ public class Suscripcion {
     @Column(name="plan" )
     private String plan;
 
-    @Column(name = "precioMensual")
-    private Double precioMensual = 0.0;
+    @Column(name = "precio")
+    private Double precio = 0.0;
 
     @Column(name = "estado")
-    private String estado; // activo, cancelado, pendiente
+    private Boolean estado = true;
 
     @Column(name="maxUsuarios")
     private Integer maxUsuarios;
 
     @Column(name="fechaInicio")
-    private LocalDateTime fechaInicio;
+    private LocalDateTime fechaInicio = LocalDateTime.now();
 
     @Column(name="fechaFin")
     private LocalDateTime fechaFin;
@@ -47,13 +47,9 @@ public class Suscripcion {
     @Column(name="deletedAt")
     private LocalDateTime deletedAt; // Soft delete
 
-    public Suscripcion(Long empresaId, String plan, String estado, Integer maxUsuarios, LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+    public Suscripcion(Long empresaId, String plan) {
         this.empresaId = empresaId;
         this.plan = plan;
-        this.estado = estado;
-        this.maxUsuarios = maxUsuarios;
-        this.fechaInicio = fechaInicio;
-        this.fechaFin = fechaFin;
     }
 
 

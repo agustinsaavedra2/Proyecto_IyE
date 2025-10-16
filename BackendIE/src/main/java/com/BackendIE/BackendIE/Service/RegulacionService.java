@@ -49,4 +49,12 @@ public class RegulacionService {
     public void delete(String id) {
         regulacionRepository.deleteById(id);
     }
+
+    public Regulacion crearRegulacion(String nombre, String contenido, String urlDocumento, String entidadEmisora, Integer anioEmision) {
+        if (nombre.isEmpty() || contenido.isEmpty() || urlDocumento.isEmpty() || entidadEmisora.isEmpty() || anioEmision == null) {
+            throw new IllegalArgumentException("El nombre y el contenido no pueden estar vacíos");
+        }
+        Regulacion regulacion = new Regulacion(nombre, contenido, urlDocumento, entidadEmisora, anioEmision);
+        return regulacionRepository.save(regulacion);
+    }
 }

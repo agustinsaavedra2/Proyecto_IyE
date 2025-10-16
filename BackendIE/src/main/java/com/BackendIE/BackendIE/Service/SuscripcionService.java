@@ -44,6 +44,9 @@ public class SuscripcionService {
         suscripcion.setMaxUsuarios(planValid.getMaxUsuarios());
         suscripcion.setFechaFin(suscripcion.getFechaInicio().plusMonths(planValid.getDuracionMeses()));
 
+        empresa.setStatus("active");
+        empresaRepository.save(empresa);
+
         return suscripcionRepository.save(suscripcion);
     }
 }

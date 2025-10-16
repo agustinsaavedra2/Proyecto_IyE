@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RegulacionRepository extends MongoRepository<Regulacion, String> {
-    // Puedes agregar búsquedas personalizadas más adelante, por ejemplo:
-    // List<Regulacion> findByEntidadEmisora(String entidad);
+
+
 }

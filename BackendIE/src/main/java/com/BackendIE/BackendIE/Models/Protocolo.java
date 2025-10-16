@@ -22,12 +22,14 @@ public class Protocolo {
     private Long empresaId;
     private String objetivo;
     private List<String> reglas;
+    private Long idPolitica;
 
-    public Protocolo(String nombre, String descripcion, Long empresaId, String objetivo, List<String> reglas) {
+    public Protocolo(String nombre, String descripcion, Long empresaId, String objetivo, List<String> reglas, Long idPolitica) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.empresaId = empresaId;
         this.objetivo = objetivo;
         this.reglas = reglas;
+        this.idPolitica = idPolitica;
     }
 }

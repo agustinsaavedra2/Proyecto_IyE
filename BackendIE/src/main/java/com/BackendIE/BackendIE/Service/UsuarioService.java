@@ -4,6 +4,7 @@ import com.BackendIE.BackendIE.Models.Empresa;
 import com.BackendIE.BackendIE.Models.Usuario;
 import com.BackendIE.BackendIE.Repository.EmpresaRepository;
 import com.BackendIE.BackendIE.Repository.UsuarioRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,9 @@ public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private EmpresaRepository empresaRepository;
 
 
     public Usuario registerAdmin(String nombre, String email, String passwordHash){
@@ -28,6 +32,7 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
+    @Transactional
     public Usuario registerUser(Long empresaId, String nombre, String email, String passwordHash, String rol, Long adminId){
         if(empresaId == null || nombre.isEmpty() || email.isEmpty() || passwordHash.isEmpty() || rol.isEmpty() || adminId == null){
             throw new IllegalArgumentException("All fields are required");
@@ -42,8 +47,19 @@ public class UsuarioService {
         if(!rol.equals("admin") && !rol.equals("complianceofficer") && !rol.equals("auditor") && !rol.equals("viewer")){
             throw new IllegalArgumentException("Invalid role");
         }
+        Empresa empresa = empresaRepository.findById(empresaId).orElse(null);
+        if(empresa == null){
+            throw new IllegalArgumentException("Empresa not found");
+        }
+         List<Usuario> usuariosEmpresa = usuarioRepository.findByEmpresaId(empresaId);
+         /*if(usuariosEmpresa.size() >= empresa.getMaxUsuarios()){
+             throw new IllegalArgumentException("User limit reached for this company");
+         }*/
         Usuario usuario = new Usuario(empresaId, nombre, email, passwordHash, rol);
-        return usuarioRepository.save(usuario);
+        usuarioRepository.save(usuario);
+        empresa.getEmpleados().add(usuario.getId());
+        empresaRepository.save(empresa);
+        return usuario;
     }
 
     public boolean login(String email, String password){

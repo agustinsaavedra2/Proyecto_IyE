@@ -23,7 +23,7 @@ public class CategoriaIndustria {
     @Column(name="descripcion")
     private String descripcion;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name="CategoriaRegulaciones", joinColumns=@JoinColumn(name="categoriaId"))
     @Column(name="regulaciones")
     private List<String> regulaciones;

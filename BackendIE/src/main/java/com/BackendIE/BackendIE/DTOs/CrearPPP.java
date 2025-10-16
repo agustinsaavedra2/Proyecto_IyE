@@ -9,11 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class registrarEmpresa {
-    public Long admin;
-    public Long categoriaId;
-    public String nombre;
-    public String codigoEmpresa;
-    public String ubicacion;
-    public String descripcion;
+public class CrearPPP {
+
+    Long empresaId;
+    Long usuarioId;
+    String pregunta;
 }

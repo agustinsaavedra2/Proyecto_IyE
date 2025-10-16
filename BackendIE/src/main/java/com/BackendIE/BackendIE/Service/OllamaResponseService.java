@@ -246,10 +246,10 @@ public class OllamaResponseService {
         }
     }
 
-    public OllamaResponse crearAuditoria(Long empresaId, Long usuarioId, String tipo, String objetivo, Long auditorLiderId, List<Long> idsDePoliticasAEvaluar) {
+    public OllamaResponse crearAuditoria(Long empresaId, String tipo, String objetivo, Long auditorLiderId, List<Long> idsDePoliticasAEvaluar) {
 
         // 1. --- Validación de Entradas ---
-        if (empresaId == null || usuarioId == null || tipo.isEmpty() || objetivo.isEmpty() || auditorLiderId == null || idsDePoliticasAEvaluar == null || idsDePoliticasAEvaluar.isEmpty()) {
+        if (empresaId == null || tipo.isEmpty() || objetivo.isEmpty() || auditorLiderId == null || idsDePoliticasAEvaluar == null || idsDePoliticasAEvaluar.isEmpty()) {
             throw new IllegalArgumentException("Todos los campos son obligatorios, incluyendo al menos una política.");
         }
 
@@ -257,15 +257,9 @@ public class OllamaResponseService {
                 .orElseThrow(() -> new IllegalArgumentException("Empresa no encontrada."));
 
         // Validamos el usuario que solicita (para el log)
-        Usuario usuarioSolicitante = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario solicitante no encontrado."));
 
         if (empresa.getStatus() == null || !empresa.getStatus().equals("active")) {
             throw new IllegalArgumentException("La empresa debe estar activa para generar documentación.");
-        }
-
-        if (!usuarioSolicitante.getEmpresaId().equals(empresaId)) {
-            throw new IllegalArgumentException("El usuario solicitante no pertenece a la empresa.");
         }
 
         // Validamos el auditor líder (para el informe)
@@ -344,7 +338,7 @@ public class OllamaResponseService {
 
         // 6. --- Guardado y Retorno del Log (Respuesta Principal) ---
         String preguntaLog = "Generar auditoría tipo: " + tipo + " para políticas: " + idsDePoliticasAEvaluar.toString();
-        OllamaResponse ollamaResponse = new OllamaResponse(empresaId, usuarioId, preguntaLog, respuesta);
+        OllamaResponse ollamaResponse = new OllamaResponse(empresaId, auditorLiderId, preguntaLog, respuesta);
 
         return ollamaResponseRepository.save(ollamaResponse);
     }

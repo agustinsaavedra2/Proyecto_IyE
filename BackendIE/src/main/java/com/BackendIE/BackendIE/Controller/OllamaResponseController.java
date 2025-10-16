@@ -1,5 +1,7 @@
 package com.BackendIE.BackendIE.Controller;
 
+import com.BackendIE.BackendIE.DTOs.CrearAuditoria;
+import com.BackendIE.BackendIE.DTOs.CrearPPP;
 import com.BackendIE.BackendIE.Models.OllamaResponse;
 import com.BackendIE.BackendIE.Service.OllamaResponseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,5 +41,15 @@ public class OllamaResponseController {
     @DeleteMapping("/{id}")
     public void delete(@PathVariable String id) {
         ollamaResponseService.delete(id);
+    }
+
+    @PostMapping("/crearPPP")
+    public OllamaResponse crearPPP(@RequestBody CrearPPP ppp) {
+        return ollamaResponseService.crearPPP(ppp.getEmpresaId(), ppp.getUsuarioId(), ppp.getPregunta());
+    }
+
+    @PostMapping("/crearAuditoria")
+    public OllamaResponse crearAuditoria(@RequestBody CrearAuditoria auditoria) {
+        return ollamaResponseService.crearAuditoria(auditoria.getEmpresaId(), auditoria.getTipo(), auditoria.getObjetivo(), auditoria.getAuditorLiderId(), auditoria.getIdsDePoliticasAEvaluar());
     }
 }

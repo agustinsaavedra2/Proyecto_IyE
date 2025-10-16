@@ -7,10 +7,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class suscribirse {
-    private Long empresaId;
-    private String plan;
-    private Long adminId;
+@AllArgsConstructor
+public class RegisterAdmin {
+    private String nombre;
+    private String email;
+    private String password;
 }

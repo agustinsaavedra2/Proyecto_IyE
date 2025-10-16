@@ -48,4 +48,15 @@ public class RegulacionController {
         regulacionService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/crear")
+    public Regulacion crearRegulacion(@RequestBody Regulacion regulacion) {
+        return regulacionService.crearRegulacion(
+                regulacion.getNombre(),
+                regulacion.getContenido(),
+                regulacion.getUrlDocumento(),
+                regulacion.getEntidadEmisora(),
+                regulacion.getAnioEmision()
+        );
+    }
 }

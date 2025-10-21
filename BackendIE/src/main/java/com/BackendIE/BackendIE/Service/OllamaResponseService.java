@@ -53,6 +53,9 @@ public class OllamaResponseService {
     @Autowired
     private AuditoriaRepository auditoriaRepository;
 
+    @Autowired
+    private RiesgoRepository riesgoRepository;
+
 
     public List<OllamaResponse> getAll() {
         return ollamaResponseRepository.findAll();
@@ -415,4 +418,7 @@ public class OllamaResponseService {
             return ""; // Retorna vacío en caso de error de parseo
         }
     }
+
+
+
 }

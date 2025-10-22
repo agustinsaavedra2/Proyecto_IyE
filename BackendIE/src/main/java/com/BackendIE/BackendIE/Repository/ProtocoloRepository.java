@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface ProtocoloRepository extends MongoRepository<Protocolo, String> {
 
-    List<Protocolo> findByIdPolitica(Long idPolitica);
+    List<Protocolo> findByIdPolitica(String idPolitica);
 }

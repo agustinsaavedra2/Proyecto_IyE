@@ -5,6 +5,7 @@ import com.BackendIE.BackendIE.DTOs.CrearPPP;
 import com.BackendIE.BackendIE.Models.OllamaResponse;
 import com.BackendIE.BackendIE.Service.OllamaResponseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,13 +44,23 @@ public class OllamaResponseController {
         ollamaResponseService.delete(id);
     }
 
-    @PostMapping("/crearPPP")
-    public OllamaResponse crearPPP(@RequestBody CrearPPP ppp) {
-        return ollamaResponseService.crearPPP(ppp.getEmpresaId(), ppp.getUsuarioId(), ppp.getPregunta());
-    }
 
     @PostMapping("/crearAuditoria")
-    public OllamaResponse crearAuditoria(@RequestBody CrearAuditoria auditoria) {
-        return ollamaResponseService.crearAuditoria(auditoria.getEmpresaId(), auditoria.getTipo(), auditoria.getObjetivo(), auditoria.getAuditorLiderId(), auditoria.getIdsDePoliticasAEvaluar());
+    public ResponseEntity<?> crearAuditoria(@RequestBody CrearAuditoria auditoria) {
+        try {
+            OllamaResponse resp = ollamaResponseService.crearAuditoria(
+                    auditoria.getEmpresaId(),
+                    auditoria.getTipo(),
+                    auditoria.getObjetivo(),
+                    auditoria.getAuditorLiderId(),
+                    auditoria.getIdsDePoliticasAEvaluar() // <-- ya es List<String>
+            );
+            return ResponseEntity.ok(resp);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest()
+                    .body("Error al crear auditoría: " + e.getMessage());
+        }
     }
+
 }

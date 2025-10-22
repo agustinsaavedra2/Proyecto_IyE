@@ -13,5 +13,7 @@ public class CrearPPP {
 
     Long empresaId;
     Long usuarioId;
+    String politicaId;
     String pregunta;
+    String protocoloId;
 }

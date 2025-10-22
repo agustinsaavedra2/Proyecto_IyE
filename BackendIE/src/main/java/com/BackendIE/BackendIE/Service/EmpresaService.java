@@ -38,4 +38,18 @@ public class EmpresaService {
         return empresa;
     }
 
+    public Empresa validarEmpresaYUsuario(Long empresaId, Long usuarioId) {
+        Empresa empresa = empresaRepository.findById(empresaId)
+                .orElseThrow(() -> new IllegalArgumentException("Empresa no encontrada."));
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado."));
+
+        if (!usuario.getEmpresaId().equals(empresaId))
+            throw new IllegalArgumentException("Usuario no pertenece a la empresa.");
+        if (!"active".equals(empresa.getStatus()))
+            throw new IllegalArgumentException("La empresa debe estar activa.");
+
+        return empresa;
+    }
+
 }

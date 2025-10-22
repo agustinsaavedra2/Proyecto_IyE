@@ -15,16 +15,16 @@ import java.util.List;
 public class Protocolo {
 
     @Id
-    private String id;
+    private String idProtocolo;
 
     private String nombre;
     private String descripcion;
     private Long empresaId;
     private String objetivo;
     private List<String> reglas;
-    private Long idPolitica;
+    private String idPolitica;
 
-    public Protocolo(String nombre, String descripcion, Long empresaId, String objetivo, List<String> reglas, Long idPolitica) {
+    public Protocolo(String nombre, String descripcion, Long empresaId, String objetivo, List<String> reglas, String idPolitica) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.empresaId = empresaId;

@@ -86,6 +86,7 @@ public class OllamaResponseService {
         ollamaResponseRepository.deleteById(id);
     }
 
+/**
 
     public OllamaResponse crearPPP(Long empresaId, Long usuarioId, String pregunta) {
         if (empresaId == null || usuarioId == null ||  pregunta.isEmpty()) {
@@ -171,9 +172,7 @@ public class OllamaResponseService {
         return ollamaResponseRepository.save(ollamaResponse);
     }
 
-    /**
-     * Método privado para parsear la respuesta de Ollama y guardar las entidades.
-     */
+
     private void parseAndSaveDocumentation(String respuesta, Long empresaId) {
 
         // Obtener el nombre del modelo de AI desde application.properties
@@ -194,7 +193,7 @@ public class OllamaResponseService {
 
         // Guardamos la política y obtenemos su ID para enlazarla al protocolo
         PoliticaEmpresa politicaGuardada = politicaEmpresaRepository.save(politica);
-        Long politicaId = politicaGuardada.getId();
+        String politicaId = politicaGuardada.getId();
 
         // --- 2. Parsear y Guardar Protocolo (Mongo Document) ---
         String protocoloBlock = extractValue(respuesta, "::PROTOCOLO::", "::END_PROTOCOLO::");
@@ -248,108 +247,109 @@ public class OllamaResponseService {
             procedimientoRepository.save(procedimiento);
         }
     }
+     */
 
-    public OllamaResponse crearAuditoria(Long empresaId, String tipo, String objetivo, Long auditorLiderId, List<Long> idsDePoliticasAEvaluar) {
+public OllamaResponse crearAuditoria(Long empresaId, String tipo, String objetivo,
+                                     Long auditorLiderId, List<String> idsDePoliticasAEvaluar) {
 
-        // 1. --- Validación de Entradas ---
-        if (empresaId == null || tipo.isEmpty() || objetivo.isEmpty() || auditorLiderId == null || idsDePoliticasAEvaluar == null || idsDePoliticasAEvaluar.isEmpty()) {
-            throw new IllegalArgumentException("Todos los campos son obligatorios, incluyendo al menos una política.");
-        }
-
-        Empresa empresa = empresaRepository.findById(empresaId)
-                .orElseThrow(() -> new IllegalArgumentException("Empresa no encontrada."));
-
-        // Validamos el usuario que solicita (para el log)
-
-        if (empresa.getStatus() == null || !empresa.getStatus().equals("active")) {
-            throw new IllegalArgumentException("La empresa debe estar activa para generar documentación.");
-        }
-
-        // Validamos el auditor líder (para el informe)
-        Usuario auditorLider = usuarioRepository.findById(auditorLiderId)
-                .orElseThrow(() -> new IllegalArgumentException("Usuario (auditor líder) no encontrado."));
-        if (!auditorLider.getEmpresaId().equals(empresaId)) {
-            throw new IllegalArgumentException("El auditor líder no pertenece a la empresa especificada.");
-        }
-
-        // 2. --- Recolección de Contexto (Documentación) ---
-        String documentacionCompleta = "";
-        List<PoliticaEmpresa> politicas = politicaEmpresaRepository.findAllById(idsDePoliticasAEvaluar);
-
-        for (PoliticaEmpresa politica : politicas) {
-            documentacionCompleta += "\n\n--- INICIO POLITICA: " + politica.getTitulo() + " (ID: " + politica.getId() + ") ---\n";
-            documentacionCompleta += politica.getContenido();
-            documentacionCompleta += "\n--- FIN POLITICA: " + politica.getTitulo() + " ---\n";
-
-            List<Protocolo> protocolos = protocoloRepository.findByIdPolitica(politica.getId());
-            for (Protocolo proto : protocolos) {
-                documentacionCompleta += "\n  -- INICIO PROTOCOLO: " + proto.getNombre() + " (ID: " + proto.getId() + ") --\n";
-                // ... (resto del bucle de protocolos y procedimientos) ...
-                documentacionCompleta += "  Descripcion: " + proto.getDescripcion() + "\n";
-                documentacionCompleta += "  Objetivo: " + proto.getObjetivo() + "\n";
-                documentacionCompleta += "  Reglas: " + String.join(";; ", proto.getReglas()) + "\n";
-
-                List<Procedimiento> procedimientos = procedimientoRepository.findByProtocoloId(proto.getId());
-                for (Procedimiento proc : procedimientos) {
-                    documentacionCompleta += "\n    - INICIO PROCEDIMIENTO: " + proc.getNombre() + " (ID: " + proc.getId() + ") -\n";
-                    documentacionCompleta += "    Descripcion: " + proc.getDescripcion() + "\n";
-                    documentacionCompleta += "    Objetivo: " + proc.getObjetivo() + "\n";
-                    documentacionCompleta += "    Pasos: " + String.join(";; ", proc.getPasos()) + "\n";
-                    documentacionCompleta += "    - FIN PROCEDIMIENTO -\n";
-                }
-                documentacionCompleta += "  -- FIN PROTOCOLO --\n";
-            }
-        }
-
-        if (documentacionCompleta.isEmpty()) {
-            throw new IllegalArgumentException("No se encontró documentación (políticas, protocolos) para los IDs proporcionados.");
-        }
-
-        // 3. --- Construcción del Prompt para la IA ---
-        String prompt = "Actúa como un Auditor de Cumplimiento experto y meticuloso.\n" +
-                "Tu tarea es realizar una auditoría de tipo '" + tipo + "' para la empresa '" + empresa.getNombre() + "' con el siguiente objetivo: '" + objetivo + "'.\n" +
-                "\n" +
-                "**Documentación a Auditar (Contexto):**\n" +
-                documentacionCompleta + "\n" +
-                "\n" +
-                "**Instrucciones de Formato de Salida:**\n" +
-                "Analiza la documentación... (etc.) ... Usa los siguientes separadores EXACTOS.\n" +
-                "\n" +
-                "::SCORE:: [Genera un puntaje de cumplimiento de 0.0 a 100.0]\n" +
-                "\n" +
-                "::HALLAZGOS_CRITICOS:: [Lista separada por ;;]\n" +
-                "\n" +
-                "::HALLAZGOS_MAYORES:: [Lista separada por ;;]\n" +
-                "\n" +
-                "::HALLAZGOS_MENORES:: [Lista separada por ;;]\n" +
-                "\n" +
-                "::RECOMENDACIONES:: [Resumen de recomendaciones]\n" +
-                "\n" +
-                "::END_AUDITORIA::\n";
-
-        // 4. --- Llamada a la IA ---
-        String respuesta = ollamaChatModel.call(prompt);
-
-        // 5. --- Parseo y Guardado de la Auditoría (Side-effect) ---
-        try {
-            // Este método ahora parsea Y GUARDA la auditoría
-            parseAndSaveAuditoria(respuesta, empresaId, tipo, objetivo, auditorLiderId, idsDePoliticasAEvaluar);
-        } catch (Exception e) {
-            System.err.println("Error crítico al parsear y guardar la AUDITORÍA de Ollama: " + e.getMessage());
-            e.printStackTrace();
-        }
-
-        // 6. --- Guardado y Retorno del Log (Respuesta Principal) ---
-        String preguntaLog = "Generar auditoría tipo: " + tipo + " para políticas: " + idsDePoliticasAEvaluar.toString();
-        OllamaResponse ollamaResponse = new OllamaResponse(empresaId, auditorLiderId, preguntaLog, respuesta);
-
-        return ollamaResponseRepository.save(ollamaResponse);
+    // 1. Validación
+    if (empresaId == null || tipo == null || tipo.isBlank() ||
+            objetivo == null || objetivo.isBlank() ||
+            auditorLiderId == null ||
+            idsDePoliticasAEvaluar == null || idsDePoliticasAEvaluar.isEmpty()) {
+        throw new IllegalArgumentException("Todos los campos son obligatorios, incluyendo al menos una política.");
     }
+
+    Empresa empresa = empresaRepository.findById(empresaId)
+            .orElseThrow(() -> new IllegalArgumentException("Empresa no encontrada."));
+
+    if (empresa.getStatus() == null || !empresa.getStatus().equalsIgnoreCase("active")) {
+        throw new IllegalArgumentException("La empresa debe estar activa para generar documentación.");
+    }
+
+    Usuario auditorLider = usuarioRepository.findById(auditorLiderId)
+            .orElseThrow(() -> new IllegalArgumentException("Usuario (auditor líder) no encontrado."));
+    if (!auditorLider.getEmpresaId().equals(empresaId)) {
+        throw new IllegalArgumentException("El auditor líder no pertenece a la empresa especificada.");
+    }
+
+    // 2. Contexto
+    StringBuilder documentacionCompleta = new StringBuilder();
+
+    // 🔹 Ahora ya son String, no hay que convertir
+    List<PoliticaEmpresa> politicas = politicaEmpresaRepository.findAllById(idsDePoliticasAEvaluar);
+
+    for (PoliticaEmpresa politica : politicas) {
+        documentacionCompleta.append("\n\n--- INICIO POLITICA: ").append(politica.getTitulo())
+                .append(" (ID: ").append(politica.getId()).append(") ---\n")
+                .append(politica.getContenido())
+                .append("\n--- FIN POLITICA: ").append(politica.getTitulo()).append(" ---\n");
+
+        List<Protocolo> protocolos = protocoloRepository.findByIdPolitica(politica.getId()); // <- String
+        for (Protocolo proto : protocolos) {
+            documentacionCompleta.append("\n  -- INICIO PROTOCOLO: ").append(proto.getNombre())
+                    .append(" (ID: ").append(proto.getIdProtocolo()).append(") --\n")
+                    .append("  Descripcion: ").append(proto.getDescripcion()).append("\n")
+                    .append("  Objetivo: ").append(proto.getObjetivo()).append("\n")
+                    .append("  Reglas: ").append(String.join(";; ", proto.getReglas())).append("\n");
+
+            List<Procedimiento> procedimientos =
+                    procedimientoRepository.findByProtocoloId(proto.getIdProtocolo()); // <- String
+            for (Procedimiento proc : procedimientos) {
+                documentacionCompleta.append("\n    - INICIO PROCEDIMIENTO: ").append(proc.getNombre())
+                        .append(" (ID: ").append(proc.getId()).append(") -\n")
+                        .append("    Descripcion: ").append(proc.getDescripcion()).append("\n")
+                        .append("    Objetivo: ").append(proc.getObjetivo()).append("\n")
+                        .append("    Pasos: ").append(String.join(";; ", proc.getPasos())).append("\n")
+                        .append("    - FIN PROCEDIMIENTO -\n");
+            }
+            documentacionCompleta.append("  -- FIN PROTOCOLO --\n");
+        }
+    }
+
+    if (documentacionCompleta.isEmpty()) {
+        throw new IllegalArgumentException("No se encontró documentación (políticas, protocolos o procedimientos) para los IDs proporcionados.");
+    }
+
+    // 3. Prompt
+    String prompt = "Actúa como un Auditor de Cumplimiento experto y meticuloso.\n" +
+            "Tu tarea es realizar una auditoría de tipo '" + tipo + "' para la empresa '" + empresa.getNombre() +
+            "' con el siguiente objetivo: '" + objetivo + "'.\n\n" +
+            "**Documentación a Auditar (Contexto):**\n" + documentacionCompleta + "\n\n" +
+            "**Instrucciones de Formato de Salida:**\n" +
+            "Analiza la documentación y genera un informe estructurado usando los siguientes separadores EXACTOS.\n" +
+            "\n" +
+            "::SCORE:: [Genera un puntaje de cumplimiento de 0.0 a 100.0]\n\n" +
+            "::HALLAZGOS_CRITICOS:: [Lista separada por ;;]\n\n" +
+            "::HALLAZGOS_MAYORES:: [Lista separada por ;;]\n\n" +
+            "::HALLAZGOS_MENORES:: [Lista separada por ;;]\n\n" +
+            "::RECOMENDACIONES:: [Resumen de recomendaciones]\n\n" +
+            "::END_AUDITORIA::\n";
+
+    // 4. Llamada IA
+    String respuesta = ollamaChatModel.call(prompt);
+
+    // 5. Parseo & guardado
+    try {
+        parseAndSaveAuditoria(respuesta, empresaId, tipo, objetivo, auditorLiderId, idsDePoliticasAEvaluar);
+    } catch (Exception e) {
+        System.err.println("Error crítico al parsear y guardar la AUDITORÍA de Ollama: " + e.getMessage());
+        e.printStackTrace();
+    }
+
+    // 6. Log
+    String preguntaLog = "Generar auditoría tipo: " + tipo + " para políticas: " + idsDePoliticasAEvaluar;
+    OllamaResponse ollamaResponse = new OllamaResponse(empresaId, auditorLiderId, preguntaLog, respuesta);
+
+    return ollamaResponseRepository.save(ollamaResponse);
+}
+
 
     /**
      * Helper para parsear la salida de crearAuditoria y guardarla.
      */
-    private void parseAndSaveAuditoria(String respuesta, Long empresaId, String tipo, String objetivo, Long auditorLiderId, List<Long> idsDePoliticas) {
+    private void parseAndSaveAuditoria(String respuesta, Long empresaId, String tipo, String objetivo,
+                                       Long auditorLiderId, List<String> idsDePoliticas) {
 
         double score = 0.0;
         try {
@@ -360,17 +360,20 @@ public class OllamaResponseService {
         }
 
         String criticosRaw = extractValue(respuesta, "::HALLAZGOS_CRITICOS::", "::HALLAZGOS_MAYORES::");
-        List<String> criticos = criticosRaw.isEmpty() ? new ArrayList<>() : Arrays.stream(criticosRaw.split(";;")).map(String::trim).filter(s -> !s.isEmpty()).toList();
+        List<String> criticos = criticosRaw.isEmpty() ? new ArrayList<>() :
+                Arrays.stream(criticosRaw.split(";;")).map(String::trim).filter(s -> !s.isEmpty()).toList();
 
         String mayoresRaw = extractValue(respuesta, "::HALLAZGOS_MAYORES::", "::HALLAZGOS_MENORES::");
-        List<String> mayores = mayoresRaw.isEmpty() ? new ArrayList<>() : Arrays.stream(mayoresRaw.split(";;")).map(String::trim).filter(s -> !s.isEmpty()).toList();
+        List<String> mayores = mayoresRaw.isEmpty() ? new ArrayList<>() :
+                Arrays.stream(mayoresRaw.split(";;")).map(String::trim).filter(s -> !s.isEmpty()).toList();
 
         String menoresRaw = extractValue(respuesta, "::HALLAZGOS_MENORES::", "::RECOMENDACIONES::");
-        List<String> menores = menoresRaw.isEmpty() ? new ArrayList<>() : Arrays.stream(menoresRaw.split(";;")).map(String::trim).filter(s -> !s.isEmpty()).toList();
+        List<String> menores = menoresRaw.isEmpty() ? new ArrayList<>() :
+                Arrays.stream(menoresRaw.split(";;")).map(String::trim).filter(s -> !s.isEmpty()).toList();
 
         String recomendaciones = extractValue(respuesta, "::RECOMENDACIONES::", "::END_AUDITORIA::");
 
-        String alcance = "Auditoría IA de políticas: " + idsDePoliticas.toString();
+        String alcance = "Auditoría IA de políticas: " + idsDePoliticas;
 
         Auditoria auditoriaFinalizada = new Auditoria(
                 empresaId,
@@ -378,7 +381,7 @@ public class OllamaResponseService {
                 objetivo,
                 alcance,
                 auditorLiderId,
-                LocalDateTime.now(), // fecha de finalización
+                LocalDateTime.now(),
                 score,
                 criticos,
                 mayores,
@@ -386,39 +389,25 @@ public class OllamaResponseService {
                 recomendaciones
         );
 
-        // Guardamos el resultado final en el repositorio de Auditorías
         auditoriaRepository.save(auditoriaFinalizada);
     }
 
     /**
      * Helper para extraer texto entre delimitadores.
-     * Si endTag es null, extrae hasta el final del string o hasta el próximo tag "::".
      */
     private String extractValue(String text, String startTag, String endTag) {
         try {
             int startIndex = text.indexOf(startTag);
-            if (startIndex == -1) return ""; // Tag inicial no encontrado
+            if (startIndex == -1) return "";
             startIndex += startTag.length();
 
-            int endIndex;
-            if (endTag != null) {
-                endIndex = text.indexOf(endTag, startIndex);
-                if (endIndex == -1) endIndex = text.length(); // Si no hay tag final, hasta el final
-            } else {
-                // Si endTag es null, busca hasta el próximo tag "::" o hasta el final
-                endIndex = text.indexOf("::", startIndex);
-                if (endIndex == -1) {
-                    endIndex = text.length(); // No hay más tags, coge hasta el final
-                }
-            }
+            int endIndex = (endTag != null) ? text.indexOf(endTag, startIndex) : -1;
+            if (endIndex == -1) endIndex = text.length();
 
             return text.substring(startIndex, endIndex).trim();
         } catch (Exception e) {
             System.err.println("Error extrayendo valor entre " + startTag + " y " + endTag + ": " + e.getMessage());
-            return ""; // Retorna vacío en caso de error de parseo
+            return "";
         }
     }
-
-
-
 }

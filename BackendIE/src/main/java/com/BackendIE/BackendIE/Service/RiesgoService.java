@@ -77,7 +77,13 @@ public class RiesgoService {
 
         // 2️⃣ Recolección de documentación de contexto
         StringBuilder contexto = new StringBuilder();
-        List<PoliticaEmpresa> politicas = politicaEmpresaRepository.findAllById(idsDePoliticas);
+
+        // ✅ Convertir los IDs Long → String, ya que Mongo usa String como identificador
+        List<String> idsPoliticasStr = idsDePoliticas.stream()
+                .map(String::valueOf)
+                .toList();
+
+        List<PoliticaEmpresa> politicas = politicaEmpresaRepository.findAllById(idsPoliticasStr);
 
         for (PoliticaEmpresa politica : politicas) {
             contexto.append("\n\n--- POLÍTICA: ").append(politica.getTitulo()).append(" ---\n");
@@ -89,7 +95,7 @@ public class RiesgoService {
                         .append("\n  Descripción: ").append(proto.getDescripcion())
                         .append("\n  Objetivo: ").append(proto.getObjetivo());
 
-                List<Procedimiento> procedimientos = procedimientoRepository.findByProtocoloId(proto.getId());
+                List<Procedimiento> procedimientos = procedimientoRepository.findByProtocoloId(proto.getIdProtocolo());
                 for (Procedimiento proc : procedimientos) {
                     contexto.append("\n    * PROCEDIMIENTO: ").append(proc.getNombre())
                             .append("\n      Descripción: ").append(proc.getDescripcion())
@@ -105,20 +111,20 @@ public class RiesgoService {
 
         // 3️⃣ Construcción del prompt para Ollama
         String prompt = """
-                Actúa como un Analista de Riesgos experto en cumplimiento normativo y gestión empresarial.
-                Tu tarea es identificar y clasificar posibles riesgos dentro de la empresa "%s",
-                usando la siguiente documentación interna (políticas, protocolos y procedimientos):
+            Actúa como un Analista de Riesgos experto en cumplimiento normativo y gestión empresarial.
+            Tu tarea es identificar y clasificar posibles riesgos dentro de la empresa "%s",
+            usando la siguiente documentación interna (políticas, protocolos y procedimientos):
 
-                %s
+            %s
 
-                Formatea tu respuesta con los siguientes delimitadores EXACTOS:
-                ::RIESGOS_OPERATIVOS:: [Lista separada por ;;]
-                ::RIESGOS_FINANCIEROS:: [Lista separada por ;;]
-                ::RIESGOS_ESTRATEGICOS:: [Lista separada por ;;]
-                ::RIESGOS_CUMPLIMIENTO:: [Lista separada por ;;]
-                ::RECOMENDACIONES_GENERALES:: [Texto]
-                ::END_RIESGOS::
-                """.formatted(empresa.getNombre(), contexto);
+            Formatea tu respuesta con los siguientes delimitadores EXACTOS:
+            ::RIESGOS_OPERATIVOS:: [Lista separada por ;;]
+            ::RIESGOS_FINANCIEROS:: [Lista separada por ;;]
+            ::RIESGOS_ESTRATEGICOS:: [Lista separada por ;;]
+            ::RIESGOS_CUMPLIMIENTO:: [Lista separada por ;;]
+            ::RECOMENDACIONES_GENERALES:: [Texto]
+            ::END_RIESGOS::
+            """.formatted(empresa.getNombre(), contexto);
 
         // 4️⃣ Llamada al modelo Ollama
         String respuesta = ollamaChatModel.call(prompt);
@@ -137,6 +143,7 @@ public class RiesgoService {
 
         return ollamaResponseRepository.save(ollamaResponse);
     }
+
 
     /**
      * Helper: parsea los bloques ::RIESGOS_...:: y los guarda en MongoDB

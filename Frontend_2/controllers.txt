@@ -1,0 +1,368 @@
+usuario:
+@RequestMapping("/api/usuarios")
+@CrossOrigin(origins = "*")
+public class UsuarioController {
+
+    @Autowired
+    private UsuarioService usuarioService;
+
+    @PostMapping("/registerAdmin")
+    public Usuario registerAdmin(@RequestBody RegisterAdmin registerAdmin){
+        return usuarioService.registerAdmin(registerAdmin.getNombre(), registerAdmin.getEmail(), registerAdmin.getPassword());
+    }
+
+    @PostMapping("/registerUser")
+    public Usuario registerUser(@RequestBody RegisterUser registerUser){
+        return usuarioService.registerUser(registerUser.getEmpresaId(), registerUser.getNombre(), registerUser.getEmail(), registerUser.getPassword(), registerUser.getRol(), registerUser.getAdminId());
+    }
+}
+
+subcripcion:
+@RequestMapping("/api/suscripcion")
+public class SuscripcionController {
+
+    @Autowired
+    private SuscripcionService suscripcionService;
+
+    @PostMapping("/suscribirse")
+    public Suscripcion suscribirse(@RequestBody Suscribirse suscripcion) {
+        return suscripcionService.suscribirse(suscripcion.getEmpresaId(), suscripcion.getPlan(), suscripcion.getAdminId());
+    }
+}
+
+riesgo:
+@RequestMapping("/api/riesgos")
+@CrossOrigin(origins = "*")
+public class RiesgoController {
+
+    @Autowired
+    private RiesgoService riesgoService;
+
+    // Crear nuevo riesgo
+    @PostMapping
+    public ResponseEntity<Riesgo> crearRiesgo(@RequestBody Riesgo riesgo) {
+        Riesgo nuevo = riesgoService.save(riesgo);
+        return ResponseEntity.ok(nuevo);
+    }
+
+    // Obtener todos los riesgos
+    @GetMapping
+    public ResponseEntity<List<Riesgo>> obtenerTodos() {
+        return ResponseEntity.ok(riesgoService.findAll());
+    }
+
+    // Obtener un riesgo por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Riesgo> obtenerPorId(@PathVariable String id) {
+        Riesgo riesgo = riesgoService.findById(id);
+        return (riesgo != null) ? ResponseEntity.ok(riesgo) : ResponseEntity.notFound().build();
+    }
+
+    // Actualizar un riesgo
+    @PutMapping("/{id}")
+    public ResponseEntity<Riesgo> actualizarRiesgo(@PathVariable String id, @RequestBody Riesgo riesgoActualizado) {
+        Riesgo existente = riesgoService.findById(id);
+        if (existente == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        riesgoActualizado.setId(id);
+        Riesgo actualizado = riesgoService.save(riesgoActualizado);
+        return ResponseEntity.ok(actualizado);
+    }
+
+    // Eliminar un riesgo
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarRiesgo(@PathVariable String id) {
+        Riesgo existente = riesgoService.findById(id);
+        if (existente == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        riesgoService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // --- Generación automática de riesgos con Ollama ---
+    @PostMapping("/generar")
+    public OllamaResponse generarRiesgos(@RequestBody CrearRiesgo dto) {
+        return riesgoService.generarRiesgos(dto.getEmpresaId(), dto.getUsuarioId(), dto.getIdsDePoliticas());
+    }
+}
+
+Regulacion:
+@RequestMapping("/api/regulaciones")
+@CrossOrigin(origins = "*")
+public class RegulacionController {
+
+    @Autowired
+    private RegulacionService regulacionService;
+
+    // Listar todas
+    @GetMapping
+    public ResponseEntity<List<Regulacion>> getAll() {
+        return ResponseEntity.ok(regulacionService.findAll());
+    }
+
+    // Buscar por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Regulacion> getById(@PathVariable String id) {
+        return regulacionService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Crear
+    @PostMapping
+    public ResponseEntity<Regulacion> create(@RequestBody Regulacion regulacion) {
+        return ResponseEntity.ok(regulacionService.save(regulacion));
+    }
+
+    // Actualizar
+    @PutMapping("/{id}")
+    public ResponseEntity<Regulacion> update(@PathVariable String id, @RequestBody Regulacion updated) {
+        return ResponseEntity.ok(regulacionService.update(id, updated));
+    }
+
+    // Eliminar (hard delete)
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        regulacionService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/crear")
+    public Regulacion crearRegulacion(@RequestBody Regulacion regulacion) {
+        return regulacionService.crearRegulacion(
+                regulacion.getNombre(),
+                regulacion.getContenido(),
+                regulacion.getUrlDocumento(),
+                regulacion.getEntidadEmisora(),
+                regulacion.getAnioEmision()
+        );
+    }
+}
+
+Protocolo:
+@RequestMapping("/api/ollama/protocolo")
+public class ProtocoloController {
+
+    @Autowired
+    private ProtocoloService protocoloService;
+
+    @PostMapping("/crear")
+    public ResponseEntity<?> crearProtocolo(@RequestBody CrearPPP dto) {
+        try {
+            Protocolo protocolo = protocoloService.crearProtocolo(
+                    dto.getEmpresaId(),
+                    dto.getUsuarioId(),
+                    dto.getPoliticaId(),
+                    dto.getPregunta()
+            );
+            return ResponseEntity.ok(protocolo);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al crear el protocolo: " + e.getMessage());
+        }
+    }
+}
+
+Procedimiento:
+@RequestMapping("/api/ollama/procedimiento")
+public class ProcedimientoController {
+
+    @Autowired
+    private ProcedimientoService procedimientoService;
+
+    @PostMapping("/crear")
+    public ResponseEntity<?> crearProcedimiento(@RequestBody CrearPPP dto) {
+        try {
+            Procedimiento procedimiento = procedimientoService.crearProcedimiento(
+                    dto.getEmpresaId(),
+                    dto.getUsuarioId(),
+                    dto.getProtocoloId(),
+                    dto.getPregunta()
+            );
+            return ResponseEntity.ok(procedimiento);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al crear el procedimiento: " + e.getMessage());
+        }
+    }
+}
+
+Politica:
+@RequestMapping("/api/ollama/politica")
+public class PoliticaController {
+
+    @Autowired
+    private PoliticaEmpresaService politicaService;
+
+
+
+    @PostMapping("/crear")
+    public ResponseEntity<?> crearPolitica(@RequestBody CrearPPP dto) {
+        try {
+            PoliticaEmpresa politica = politicaService.crearPolitica(
+                    dto.getEmpresaId(),
+                    dto.getUsuarioId(),
+                    dto.getPregunta()
+            );
+            return ResponseEntity.ok(politica);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al crear la política: " + e.getMessage());
+        }
+    }
+}
+
+Plan:
+@RequestMapping("/api/planes")
+@CrossOrigin(origins = "*")
+public class PlanController {
+
+    @Autowired
+    private PlanService planService;
+
+    @PostMapping("/crear")
+    public Plan crear(@RequestBody Plan plan) {
+        return planService.crearPlan(
+                plan.getNombre(),
+                plan.getPrecio(),
+                plan.getMaxUsuarios(),
+                plan.getDuracionMeses()
+        );
+    }
+
+}
+
+OllamaResponse:
+@RequestMapping("/api/ollama")
+@CrossOrigin(origins = "*")
+public class OllamaResponseController {
+
+    @Autowired
+    private OllamaResponseService ollamaResponseService;
+
+    @GetMapping
+    public List<OllamaResponse> getAll() {
+        return ollamaResponseService.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public OllamaResponse getById(@PathVariable String id) {
+        return ollamaResponseService.getById(id)
+                .orElseThrow(() -> new RuntimeException("No se encontró la respuesta con id " + id));
+    }
+
+    @PostMapping
+    public OllamaResponse create(@RequestBody OllamaResponse response) {
+        return ollamaResponseService.save(response);
+    }
+
+    @PutMapping("/{id}")
+    public OllamaResponse update(@PathVariable String id, @RequestBody OllamaResponse updatedResponse) {
+        return ollamaResponseService.update(id, updatedResponse);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable String id) {
+        ollamaResponseService.delete(id);
+    }
+
+
+    @PostMapping("/crearAuditoria")
+    public ResponseEntity<?> crearAuditoria(@RequestBody CrearAuditoria auditoria) {
+        try {
+            OllamaResponse resp = ollamaResponseService.crearAuditoria(
+                    auditoria.getEmpresaId(),
+                    auditoria.getTipo(),
+                    auditoria.getObjetivo(),
+                    auditoria.getAuditorLiderId(),
+                    auditoria.getIdsDePoliticasAEvaluar() // <-- ya es List<String>
+            );
+            return ResponseEntity.ok(resp);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest()
+                    .body("Error al crear auditoría: " + e.getMessage());
+        }
+    }
+
+}
+
+Empresa:
+@RequestMapping("/api/empresas")
+@CrossOrigin(origins = "*")
+public class EmpresaController {
+
+    @Autowired
+    private EmpresaService empresaService;
+
+    @PostMapping("/registrar")
+    public Empresa registrarEmpresa(@RequestBody RegistrarEmpresa empresa) {
+        return empresaService.registrarEmpresa(
+                empresa.getAdmin(),
+                empresa.getCategoriaId(),
+                empresa.getNombre(),
+                empresa.getCodigoEmpresa(),
+                empresa.getUbicacion(),
+                empresa.getDescripcion()
+        );
+    }
+}
+
+Cateogria:
+@RequestMapping("/api/categorias")
+@CrossOrigin(origins = "*")
+public class CategoriaController {
+
+    @Autowired
+    private CategoriaIndustriaService categoriaIndustriaService;
+
+    @PostMapping("/crear")
+    public CategoriaIndustria crearCategoria(@RequestBody CategoriaIndustria categoriaIndustria) {
+        return categoriaIndustriaService.crearCategoria(categoriaIndustria.getNombre(), categoriaIndustria.getDescripcion(), categoriaIndustria.getRegulaciones());
+    }
+
+}
+
+Auditoria:
+@RequestMapping("/api/auditorias")
+@CrossOrigin(origins = "*")
+public class AuditoriaController {
+
+    @Autowired
+    private AuditoriaService auditoriaService;
+
+    // Crear nueva auditoría
+    @PostMapping
+    public ResponseEntity<Auditoria> createAuditoria(@RequestBody Auditoria auditoria) {
+        Auditoria saved = auditoriaService.save(auditoria);
+        return ResponseEntity.ok(saved);
+    }
+
+    // Listar todas
+    @GetMapping
+    public ResponseEntity<List<Auditoria>> getAllAuditorias() {
+        return ResponseEntity.ok(auditoriaService.findAll());
+    }
+
+    // Buscar por ID
+    @GetMapping("/{id}")
+    public ResponseEntity<Auditoria> getAuditoriaById(@PathVariable String id) {
+        return auditoriaService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Actualizar auditoría
+    @PutMapping("/{id}")
+    public ResponseEntity<Auditoria> updateAuditoria(
+            @PathVariable String id,
+            @RequestBody Auditoria auditoria
+    ) {
+        auditoria.setId(id);
+        Auditoria updated = auditoriaService.save(auditoria);
+        return ResponseEntity.ok(updated);
+    }
+
+
+}

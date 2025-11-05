@@ -1,0 +1,74 @@
+// Helper centralizado para llamadas al API
+// @ts-ignore - allow using process.env in this runtime-aware helper
+export const API_BASE = process.env.NEXT_PUBLIC_API_URL
+
+export class ApiError extends Error {
+  status: number
+  body: string | object | null
+
+  constructor(status: number, body: string | object | null, message?: string) {
+    super(message || `API Error ${status}`)
+    this.name = 'ApiError'
+    this.status = status
+    this.body = body
+  }
+}
+
+export async function apiFetcher(path: string, options?: RequestInit) {
+  // If API_BASE is not set, on the browser we'll fall back to a relative path
+  // so the app can call the same-origin API routes. On the server we require
+  // the env var to be set (backend host) and will throw a helpful error.
+  let base = API_BASE
+  if (!base) {
+    if (typeof window !== 'undefined') {
+      // client runtime: allow relative calls and warn
+      // e.g. calling '/api/...' will go to the same host where frontend runs
+      // which is convenient for local development when using a proxy or same-origin API.
+      // eslint-disable-next-line no-console
+      console.warn('NEXT_PUBLIC_API_URL is not set — using relative paths for apiFetcher')
+      base = ''
+    } else {
+      throw new Error('NEXT_PUBLIC_API_URL is not set. Set it in your environment or .env.local')
+    }
+  }
+
+  const url = `${base}${path}`
+
+  let res: Response
+  try {
+    res = await fetch(url, {
+      headers: { 'Content-Type': 'application/json' },
+      ...options,
+    })
+  } catch (err: any) {
+    // Network/connection error — wrap in ApiError with status 0 so callers can
+    // detect network failures separately from HTTP errors.
+    throw new ApiError(0, null, err?.message || 'Network error')
+  }
+
+  const text = await res.text()
+
+  if (!res.ok) {
+    let parsedBody: string | object | null = null
+    try {
+      parsedBody = text ? JSON.parse(text) : null
+    } catch (e) {
+      parsedBody = text
+    }
+    // attach status and body to the error for easier debugging in callers
+    throw new ApiError(res.status, parsedBody, typeof parsedBody === 'string' ? parsedBody : undefined)
+  }
+
+  const contentType = res.headers.get('content-type')
+  if (contentType && contentType.includes('application/json')) {
+    try {
+      return JSON.parse(text)
+    } catch (e) {
+      return text
+    }
+  }
+
+  return text
+}
+
+export default apiFetcher

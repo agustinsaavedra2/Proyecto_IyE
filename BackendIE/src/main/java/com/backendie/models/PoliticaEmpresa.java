@@ -1,5 +1,7 @@
 package com.backendie.models;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
@@ -8,6 +10,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 @Document(collection = "politicasEmpresas")
 public class PoliticaEmpresa {
 

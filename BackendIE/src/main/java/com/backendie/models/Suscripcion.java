@@ -1,14 +1,20 @@
 package com.backendie.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Filter;
 
 import java.time.LocalDateTime;
 
+@Filter(name = "categoriaFilter", condition = "empresa_id IN (select id from empresas where categoria_id = :categoriaId)")
 @Entity
 @Table(name="suscripciones")
 @Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class Suscripcion {
 

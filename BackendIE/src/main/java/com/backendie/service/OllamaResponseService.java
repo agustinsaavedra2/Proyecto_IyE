@@ -2,12 +2,15 @@ package com.backendie.service;
 
 import com.backendie.models.*;
 import com.backendie.repository.*;
+import com.backendie.multitenancy.TenantSecurity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.ConfigurableEnvironment; // Para leer properties
 import java.time.LocalDateTime;
 import java.util.*;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.stereotype.Service;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +39,8 @@ public class OllamaResponseService {
     private final AuditoriaRepository auditoriaRepository;
 
     private final RiesgoRepository riesgoRepository;
+
+    private final TenantSecurity tenantSecurity;
 
     public List<OllamaResponse> getAll() {
         return ollamaResponseRepository.findAll();
@@ -66,10 +71,8 @@ public class OllamaResponseService {
         ollamaResponseRepository.deleteById(id);
     }
 
-/**
-
     public OllamaResponse crearPPP(Long empresaId, Long usuarioId, String pregunta) {
-        if (empresaId == null || usuarioId == null ||  pregunta.isEmpty()) {
+        if (empresaId == null || usuarioId == null || pregunta == null || pregunta.isBlank()) {
             throw new IllegalArgumentException("Los campos empresaId, usuarioId y pregunta son obligatorios.");
         }
 
@@ -83,154 +86,151 @@ public class OllamaResponseService {
             throw new IllegalArgumentException("Usuario no pertenece a la empresa.");
         }
 
-        if (empresa.getStatus() == null || !empresa.getStatus().equals("active")) {
+        if (empresa.getStatus() == null || !empresa.getStatus().equalsIgnoreCase("active")) {
             throw new IllegalArgumentException("La empresa debe estar activa para generar documentación.");
         }
 
         CategoriaIndustria categoria = categoriaIndustriaRepository.findById(empresa.getCategoriaId())
                 .orElseThrow(() -> new IllegalArgumentException("Categoría de industria no encontrada."));
 
-        List<String> regulacionesIds = categoria.getRegulaciones();
+        List<String> regulacionesIds = categoria.getRegulaciones() == null ? Collections.emptyList() : categoria.getRegulaciones();
 
         List<Regulacion> regulaciones = regulacionesIds.stream()
                 .map(id -> regulacionRepository.findById(id).orElse(null))
-                .filter(r -> r != null)
+                .filter(Objects::nonNull)
                 .toList();
 
-        String regulacionesStr = "";
+        StringBuilder regulacionesStr = new StringBuilder();
         for (Regulacion regulacion : regulaciones) {
-            regulacionesStr = regulacionesStr + "\n\n" + regulacion.getContenido();
+            regulacionesStr.append("\n\n").append(regulacion.getContenido());
         }
 
-        String prompt = "Actúa como un experto en consultoría de cumplimiento normativo y excelencia operativa para la industria de: " + categoria.getNombre() +".\n" +
-                "    Tu tarea es generar un paquete de documentación completo para la empresa "+ empresa.getNombre() + "sobre el tema: "+ pregunta + "'.\n" +
-                "\n" +
-                "    **Contexto Regulatorio Obligatorio (Leyes y Normas):**\n" +
-                "    Debes basar tus respuestas en las siguientes regulaciones. Si una regulación no aplica, ignórala. Si aplica, incorpórala en el contenido:\n" +
-                regulacionesStr + "\n" +
+        String prompt = "Actúa como un experto en consultoría de cumplimiento normativo y excelencia operativa para la industria de: " + categoria.getNombre() + ".\n" +
+                "Tu tarea es generar un paquete de documentación completo para la empresa " + empresa.getNombre() + " sobre el tema: " + pregunta + ".\n\n" +
+                "**Contexto Regulatorio Obligatorio (Leyes y Normas):**\n" + regulacionesStr + "\n\n" +
                 "**Instrucciones de Formato de Salida:**\n" +
-                "    Debes generar UNA política, UN protocolo principal y AL MENOS UN procedimiento detallado.\n" +
-                "    Usa los siguientes separadores EXACTOS para cada sección y campo. No agregues texto fuera de esta estructura.\n" +
-                "\n" +
-                "    ::POLITICA::\n" +
-                "    ::titulo:: [Genera un título claro y conciso para la política]\n" +
-                "    ::contenido:: [Genera el contenido completo de la política. Debe incluir: 1. Objetivo. 2. Alcance (a quién aplica). 3. Declaraciones de la política (las reglas generales). 4. Responsabilidades (Gerencia, Empleados).]\n" +
-                "    ::END_POLITICA::\n" +
-                "\n" +
-                "    ::PROTOCOLO::\n" +
-                "    ::nombre:: [Genera un nombre para el protocolo, ej: \"Protocolo de Gestión de Alérgenos\"]\n" +
-                "    ::descripcion:: [Genera una breve descripción del protocolo]\n" +
-                "    ::objetivo:: [Genera el objetivo principal del protocolo]\n" +
-                "    ::reglas:: [Genera una lista de reglas clave del protocolo. Separa cada regla con ;;]\n" +
-                "    ::END_PROTOCOLO::\n" +
-                "\n" +
-                "    ::PROCEDIMIENTO::\n" +
-                "    ::nombre:: [Genera un nombre para el primer procedimiento, ej: \"Procedimiento de Recepción y Almacenamiento de Alérgenos\"]\n" +
-                "    ::descripcion:: [Genera una breve descripción del procedimiento]\n" +
-                "    ::objetivo:: [Genera el objetivo específico de este procedimiento]\n" +
-                "    ::pasos:: [Genera la lista de pasos detallados (el \"cómo se hace\"). Separa cada paso con ;;]\n" +
-                "    ::END_PROCEDIMIENTO::\n" +
-                "    \"\"\"";
+                "Genera UNA política, UN protocolo principal y AL MENOS UN procedimiento detallado. Usa los delimitadores EXACTOS:\n" +
+                "::POLITICA:: ... ::END_POLITICA::\n::PROTOCOLO:: ... ::END_PROTOCOLO::\n::PROCEDIMIENTO:: ... ::END_PROCEDIMIENTO::\n";
 
         String respuesta = ollamaChatModel.call(prompt);
 
-        // --- INICIO DE NUEVA LÓGICA ---
-        // Parsear y guardar la documentación generada
         try {
-            // El modelo de PoliticaEmpresa es JPA (SQL) y los otros son Mongo
-            // pero la lógica de parseo funciona igual.
             parseAndSaveDocumentation(respuesta, empresaId);
         } catch (Exception e) {
-            // Es buena idea registrar el error, pero aun así guardar la respuesta cruda
-            // para depuración.
             System.err.println("Error crítico al parsear y guardar la documentación de Ollama: " + e.getMessage());
             e.printStackTrace();
         }
-        // --- FIN DE NUEVA LÓGICA ---
 
         OllamaResponse ollamaResponse = new OllamaResponse(empresaId, usuarioId, pregunta, respuesta);
         return ollamaResponseRepository.save(ollamaResponse);
     }
 
+    // New method: classify risk using Ollama LLM
+    public Map<String, Object> classifyRisk(Long empresaId, Long usuarioId, List<String> idsDePoliticasAEvaluar) {
+        // build context
+        Empresa empresa = empresaRepository.findById(empresaId).orElseThrow(() -> new IllegalArgumentException("Empresa no encontrada."));
+        List<PoliticaEmpresa> politicas = politicaEmpresaRepository.findAllById(idsDePoliticasAEvaluar);
+        StringBuilder contexto = new StringBuilder();
+        for (PoliticaEmpresa p : politicas) {
+            contexto.append("\n\n--- ").append(p.getTitulo()).append(" ---\n").append(p.getContenido());
+        }
 
-    private void parseAndSaveDocumentation(String respuesta, Long empresaId) {
+        String prompt = "Eres un modelo que clasifica el nivel de riesgo de cumplimiento de una empresa en base a sus políticas y documentación. " +
+                "Devuelve la salida usando exactamente estos delimitadores:\n" +
+                "::RISK:: [Alto|Medio|Bajo]\n" +
+                "::CONFIDENCE:: [0-100]\n" +
+                "::EXPLANATION:: [Explicación breve]\n" +
+                "Analiza el siguiente contexto:\n" + contexto + "\n";
 
-        // Obtener el nombre del modelo de AI desde application.properties
-        String aiModel = env.getProperty("spring.ai.ollama.chat.model", "desconocido");
+        String respuesta = ollamaChatModel.call(prompt);
 
-        // --- 1. Parsear y Guardar Política (JPA Entity) ---
-        String politicaBlock = extractValue(respuesta, "::POLITICA::", "::END_POLITICA::");
-        String politicaTitulo = extractValue(politicaBlock, "::titulo::", null);
-        String politicaContenido = extractValue(politicaBlock, "::contenido::", null);
+        String risk = extractValue(respuesta, "::RISK::", "::CONFIDENCE::");
+        String confidence = extractValue(respuesta, "::CONFIDENCE::", "::EXPLANATION::");
+        String explanation = extractValue(respuesta, "::EXPLANATION::", null);
 
-        PoliticaEmpresa politica = new PoliticaEmpresa();
-        politica.setEmpresaId(empresaId);
-        politica.setTitulo(politicaTitulo);
-        politica.setContenido(politicaContenido);
-        politica.setAiGenerada(true);
-        politica.setAiModeloVersion(aiModel);
-        politica.setEstado("draft"); // Estado inicial por defecto
+        // sanitize
+        risk = risk.isBlank() ? "Desconocido" : risk.trim();
+        double conf = 0.0;
+        try { conf = Double.parseDouble(confidence.trim()); } catch (Exception ignored) {}
 
-        // Guardamos la política y obtenemos su ID para enlazarla al protocolo
-        PoliticaEmpresa politicaGuardada = politicaEmpresaRepository.save(politica);
-        String politicaId = politicaGuardada.getId();
+        // Save as Riesgo entity (registro de evaluación)
+        Riesgo r = new Riesgo();
+        r.setEmpresaId(empresaId);
+        r.setTitulo("Evaluación de riesgo IA");
+        r.setDescripcion("Clasificación automática de riesgo");
+        r.setCategoria("compliance");
+        r.setProbabilidad(conf > 66 ? "alta" : conf > 33 ? "media" : "baja");
+        r.setImpacto("medio");
+        r.setNivelRiesgo(risk);
+        r.setMedidasMitigacion(explanation);
+        r.setResponsable(usuarioId);
+        r.setEstado("evaluado");
 
-        // --- 2. Parsear y Guardar Protocolo (Mongo Document) ---
-        String protocoloBlock = extractValue(respuesta, "::PROTOCOLO::", "::END_PROTOCOLO::");
-        String protoNombre = extractValue(protocoloBlock, "::nombre::", null);
-        String protoDesc = extractValue(protocoloBlock, "::descripcion::", null);
-        String protoObjetivo = extractValue(protocoloBlock, "::objetivo::", null);
-        String protoReglasRaw = extractValue(protocoloBlock, "::reglas::", null);
+        riesgoRepository.save(r);
 
-        List<String> protoReglas = protoReglasRaw.isEmpty()
-                ? Collections.emptyList()
-                : Arrays.stream(protoReglasRaw.split(";;")).map(String::trim).toList(); // Separa y limpia
+        Map<String,Object> out = new HashMap<>();
+        out.put("risk", risk);
+        out.put("confidence", conf);
+        out.put("explanation", explanation);
+        out.put("riesgoId", r.getId());
+        out.put("raw", respuesta);
+        return out;
+    }
 
-        Protocolo protocolo = new Protocolo(
-                protoNombre,
-                protoDesc,
-                empresaId,
-                protoObjetivo,
-                protoReglas,
-                politicaId // Enlazamos la política recién creada
-        );
+    // New method: NER using Ollama with JSON parsing fallback
+    public Map<String, Object> extractEntities(String text) {
+        String prompt = "Extrae entidades relevantes (FECHAS, ENTIDADES, MONTO, DIRECCIONES, NOMBRES) del siguiente texto y devuelve en formato JSON:\n" +
+                text + "\n" +
+                "Responde SOLO con un objeto JSON con keys: dates, entities, amounts, addresses, names";
+        String respuesta = ollamaChatModel.call(prompt);
+        Map<String,Object> out = new HashMap<>();
+        out.put("raw", respuesta);
 
-        // Guardamos el protocolo y obtenemos su ID para enlazarlo al procedimiento
-        Protocolo protocoloGuardado = protocoloRepository.save(protocolo);
-        String protocoloId = protocoloGuardado.getId();
+        // Try parse JSON from response
+        Map<String,Object> parsed = parseJsonIfPossible(respuesta);
+        if (parsed != null) {
+            out.putAll(parsed);
+            return out;
+        }
 
-        // --- 3. Parsear y Guardar Procedimiento(s) (Mongo Document) ---
-        // Usamos Regex para encontrar TODOS los bloques de procedimiento
-        Pattern procPattern = Pattern.compile("::PROCEDIMIENTO::(.*?)::END_PROCEDIMIENTO::", Pattern.DOTALL);
-        Matcher procMatcher = procPattern.matcher(respuesta);
+        // Fallback heuristics: amounts and dates
+        try {
+            List<String> amounts = new ArrayList<>();
+            java.util.regex.Matcher m = java.util.regex.Pattern.compile("\\$\\s?([0-9.,]+)").matcher(respuesta);
+            while (m.find()) amounts.add(m.group(1));
+            List<String> dates = new ArrayList<>();
+            java.util.regex.Matcher d = java.util.regex.Pattern.compile("(\\d{4}-\\d{2}-\\d{2}|\\d{2}/\\d{2}/\\d{4}|\\d{1,2} de [A-Za-z]+ de \\\\d{4})").matcher(respuesta);
+            while (d.find()) dates.add(d.group());
 
-        while (procMatcher.find()) {
-            String procBlock = procMatcher.group(1);
-            String procNombre = extractValue(procBlock, "::nombre::", null);
-            String procDesc = extractValue(procBlock, "::descripcion::", null);
-            String procObjetivo = extractValue(procBlock, "::objetivo::", null);
-            String procPasosRaw = extractValue(procBlock, "::pasos::", null);
+            out.put("amounts", amounts);
+            out.put("dates", dates);
+        } catch (Exception e) {
+            // ignore fallback errors
+        }
 
-            List<String> procPasos = procPasosRaw.isEmpty()
-                    ? Collections.emptyList()
-                    : Arrays.stream(procPasosRaw.split(";;")).map(String::trim).toList(); // Separa y limpia
+        return out;
+    }
 
-            Procedimiento procedimiento = new Procedimiento(
-                    protocoloId, // Enlazamos el protocolo recién creado
-                    procPasos,
-                    procObjetivo,
-                    empresaId,
-                    procDesc,
-                    procNombre
-            );
-
-            procedimientoRepository.save(procedimiento);
+    private Map<String,Object> parseJsonIfPossible(String text) {
+        // Very forgiving JSON extraction: find first { ... } block and parse with Jackson
+        try {
+            int start = text.indexOf('{');
+            int end = text.lastIndexOf('}');
+            if (start == -1 || end == -1 || end <= start) return null;
+            String json = text.substring(start, end+1);
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            mapper.findAndRegisterModules();
+            return mapper.readValue(json, Map.class);
+        } catch (Exception e) {
+            return null;
         }
     }
-     */
 
-public OllamaResponse crearAuditoria(Long empresaId, String tipo, String objetivo,
+    public OllamaResponse crearAuditoria(Long empresaId, String tipo, String objetivo,
                                      Long auditorLiderId, List<String> idsDePoliticasAEvaluar) {
+
+    // Tenant check: ensure empresa belongs to current tenant category
+    tenantSecurity.assertEmpresaBelongsToCurrentCategoria(empresaId);
 
     // 1. Validación
     if (empresaId == null || tipo == null || tipo.isBlank() ||
@@ -322,7 +322,7 @@ public OllamaResponse crearAuditoria(Long empresaId, String tipo, String objetiv
     OllamaResponse ollamaResponse = new OllamaResponse(empresaId, auditorLiderId, preguntaLog, respuesta);
 
     return ollamaResponseRepository.save(ollamaResponse);
-}
+    }
 
 
     /**
@@ -388,6 +388,65 @@ public OllamaResponse crearAuditoria(Long empresaId, String tipo, String objetiv
         } catch (Exception e) {
             System.err.println("Error extrayendo valor entre " + startTag + " y " + endTag + ": " + e.getMessage());
             return "";
+        }
+    }
+
+    /**
+     * Helper para parsear la salida de crearPPP (document generation) y guardarla en PoliticaEmpresa/Protocolo/Procedimiento.
+     */
+    private void parseAndSaveDocumentation(String respuesta, Long empresaId) {
+        String aiModel = env.getProperty("spring.ai.ollama.chat.model", "desconocido");
+
+        String politicaBlock = extractValue(respuesta, "::POLITICA::", "::END_POLITICA::");
+        String politicaTitulo = extractValue(politicaBlock, "::titulo::", null);
+        String politicaContenido = extractValue(politicaBlock, "::contenido::", null);
+
+        PoliticaEmpresa politica = new PoliticaEmpresa();
+        politica.setEmpresaId(empresaId);
+        politica.setTitulo(politicaTitulo);
+        politica.setContenido(politicaContenido);
+        politica.setAiGenerada(true);
+        politica.setAiModeloVersion(aiModel);
+        politica.setEstado("draft");
+
+        PoliticaEmpresa politicaGuardada = politicaEmpresaRepository.save(politica);
+        String politicaId = politicaGuardada.getId();
+
+        String protocoloBlock = extractValue(respuesta, "::PROTOCOLO::", "::END_PROTOCOLO::");
+        String protoNombre = extractValue(protocoloBlock, "::nombre::", null);
+        String protoDesc = extractValue(protocoloBlock, "::descripcion::", null);
+        String protoObjetivo = extractValue(protocoloBlock, "::objetivo::", null);
+        String protoReglasRaw = extractValue(protocoloBlock, "::reglas::", null);
+
+        List<String> protoReglas = protoReglasRaw == null || protoReglasRaw.isEmpty() ? Collections.emptyList() :
+                Arrays.stream(protoReglasRaw.split(";;")).map(String::trim).toList();
+
+        Protocolo protocolo = new Protocolo();
+        protocolo.setNombre(protoNombre);
+        protocolo.setDescripcion(protoDesc);
+        protocolo.setEmpresaId(empresaId);
+        protocolo.setObjetivo(protoObjetivo);
+        protocolo.setReglas(protoReglas);
+        protocolo.setPoliticaId(politicaId);
+
+        Protocolo protocoloGuardado = protocoloRepository.save(protocolo);
+        String protocoloId = protocoloGuardado.getIdProtocolo();
+
+        // Procedimientos: find all PROCEDIMIENTO blocks
+        Pattern procPattern = Pattern.compile("::PROCEDIMIENTO::(.*?)::END_PROCEDIMIENTO::", Pattern.DOTALL);
+        Matcher procMatcher = procPattern.matcher(respuesta);
+        while (procMatcher.find()) {
+            String procBlock = procMatcher.group(1);
+            String procNombre = extractValue(procBlock, "::nombre::", null);
+            String procDesc = extractValue(procBlock, "::descripcion::", null);
+            String procObjetivo = extractValue(procBlock, "::objetivo::", null);
+            String procPasosRaw = extractValue(procBlock, "::pasos::", null);
+
+            List<String> procPasos = procPasosRaw == null || procPasosRaw.isEmpty() ? Collections.emptyList() :
+                    Arrays.stream(procPasosRaw.split(";;")).map(String::trim).toList();
+
+            Procedimiento procedimiento = new Procedimiento(protocoloId, procPasos, procObjetivo, empresaId, procDesc, procNombre);
+            procedimientoRepository.save(procedimiento);
         }
     }
 }

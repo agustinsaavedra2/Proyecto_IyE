@@ -1,0 +1,91 @@
+1) Gestión de usuarios y roles
+
+- Registro y autenticación de usuarios con diferentes niveles de acceso (ej. administrador, auditor, empleado, inversionista).
+
+- Control de permisos basados en rol (RBAC).
+
+2) Generación de políticas y procedimientos
+
+- Plantillas dinámicas personalizables para crear políticas corporativas.
+
+- Editor en línea para modificar y versionar políticas.
+
+- Histórico de cambios y control de versiones.
+
+
+3) Tracking de cumplimiento normativo
+
+- Panel de control con el estado de cumplimiento (ISO, SOC2, GDPR, etc.).
+- Alertas automáticas sobre vencimientos de normativas o auditorías pendientes.
+
+- Registro de evidencia documental para cada requisito normativo.
+
+
+4) Auditorías automatizadas
+
+- Ejecución de checklists configurables para cada estándar.
+
+- Generación automática de informes de auditoría.
+
+- Identificación de no conformidades y propuestas de acción correctiva.
+
+
+5) Gestión de riesgos
+
+- Matriz de riesgos configurable (probabilidad × impacto).
+
+- Registro y seguimiento de incidentes.
+
+- Planes de mitigación con responsables asignados.
+
+
+6) Certificaciones
+
+- Módulo de seguimiento del progreso hacia certificaciones (ej. ISO 27001, SOC2, GDPR).
+
+- Documentación centralizada vinculada a cada control requerido.
+- Checklist de requisitos específicos por certificación.
+
+
+7) Reportes para inversionistas y stakeholders
+
+- Reportes ejecutivos de estado de cumplimiento y riesgos.
+
+- Visualizaciones (gráficas, dashboards exportables en PDF/Excel).
+
+- Acceso seguro para terceros (inversionistas/auditores externos).
+
+
+8) Integraciones
+- API para integración con otras herramientas (ej. Jira, Slack, Notion, Google Workspace).
+
+- Importación/exportación de documentos desde almacenamiento en la nube (Google Drive, OneDrive, Dropbox).
+
+9) Diseño MultiTenant
+
+- Optar por esquema multi-tenant compartido con aislación de datos por cliente utilizando schemas separados en la base de datos.
+- Garantizar seguridad y aislamiento con Row-Level Security en PostgreSQL.
+
+- Control de acceso granular con RBAC por tenant y usuario.
+
+
+
+donde tenemos que cumplir como mínimo:
+Auditorias Automatizadas para MiPymes Desafío ML: Clasificación ́on de Riesgos y Generación ́on de Documentos Contexto: Su plataforma automatiza auditorias de cumplimiento para restaurantes y MiPymes. Problema a Resolver:
+1. Clasificación de Riesgos de Cumplimiento: Desarrollar un modelo que clasifique el nivel de riesgo de una empresa:  Análisis de documentos y políticas existentes Historial de incumplimientos  7  Sector de la industria Tamaño y complejidad de operaciones
+2. Generación ́on Inteligente de Documentos: Usar NLP para generar documentos de compliance personalizados: Políticas de seguridad alimentaria Protocolos de higiene Manuales de procedimientos
+Entregables Esperados: Modelo de clasificación ́multi-clase (Alto/Medio/Bajo riesgo) con accuracy > 80 %
+Sistema de extracción de entidades de documentos legales (NER)
+Generador de documentos usando templates y LLM con fine-tuning
+Score de compliance automático con explicabilidad
+Dataset Sugerido: Documentos públicos de normativas chilenas, casos de sanciones de la Dirección del Trabajo.
+
+Requerimientos no funcionales:
+- Documentación completa del software realizado
+- Pruebas automatizadas
+- La interfaz del software debe ser clara y fácil de utilizar
+- Acceso responsivo desde navegadores web
+- Tiempos de respuesta menores a 2 segundos
+- Pruebas unitarias automatizadas
+- Copia de seguridad de los datos
+

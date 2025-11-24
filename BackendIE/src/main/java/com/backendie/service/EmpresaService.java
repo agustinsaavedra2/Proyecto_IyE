@@ -3,6 +3,7 @@ package com.backendie.service;
 import com.backendie.dtos.EmpresaDTO;
 import com.backendie.models.Empresa;
 import com.backendie.models.Usuario;
+import com.backendie.multitenancy.TenantContext;
 import com.backendie.repository.EmpresaRepository;
 import com.backendie.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
@@ -52,9 +53,17 @@ public class EmpresaService {
         return empresa;
     }
 
+    @Transactional
     public List<EmpresaDTO> obtenerEmpresasDTO(){
         List<EmpresaDTO> resumen = new ArrayList<>();
-        for (Empresa e : empresaRepository.findAll()) {
+        Long currentCategoria = TenantContext.getCurrentCategoria();
+        List<Empresa> empresas;
+        if (currentCategoria != null) {
+            empresas = empresaRepository.findAllByCategoriaId(currentCategoria);
+        } else {
+            empresas = empresaRepository.findAll();
+        }
+        for (Empresa e : empresas) {
             resumen.add(new EmpresaDTO(e.getId(), e.getNombre()));
         }
         return resumen;

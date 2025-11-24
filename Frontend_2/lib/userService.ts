@@ -70,6 +70,13 @@ export async function getAdminsDTO(): Promise<EmpresaDTO[]> {
   return apiFetcher('/api/usuarios/adminsdto')
 }
 
+export async function getUsersRolDTO(empresaId: number, rol: string): Promise<EmpresaDTO[]> {
+  const url = `/api/usuarios/usersRol?empresaId=${encodeURIComponent(String(empresaId))}&rol=${encodeURIComponent(
+    rol,
+  )}`
+  return apiFetcher(url)
+}
+
 export default {
   registerAdmin,
   registerUser,
@@ -80,4 +87,5 @@ export default {
   getUsuariosEmpresaDTO,
   getUsuariosDTO,
   getAdminsDTO,
+  getUsersRolDTO,
 }

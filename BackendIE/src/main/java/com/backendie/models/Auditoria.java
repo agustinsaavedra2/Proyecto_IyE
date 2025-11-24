@@ -9,6 +9,8 @@ import java.util.List;
 
 @Document(collection = "auditorias")
 @Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class Auditoria {
 

@@ -4,9 +4,16 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
 
+@FilterDef(name = "categoriaFilter", parameters = @ParamDef(name = "categoriaId", type = Long.class))
+@Filter(name = "categoriaFilter", condition = "categoria_id = :categoriaId")
 @Table(name="empresas")
 @Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 public class Empresa {

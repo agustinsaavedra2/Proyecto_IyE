@@ -34,12 +34,36 @@ export default function CrearAuditoriaSimplePage() {
   useEffect(() => {
     ;(async () => {
       try {
-        const [list, adminsList] = await Promise.all([empresaService.getEmpresasDTO(), userService.getAdminsDTO()])
+        const list = await empresaService.getEmpresasDTO()
         setCompanies(list)
-        setAdmins(adminsList)
+        // do not pre-load admins globally — load auditors for the selected company below
       } catch (_) {}
     })()
   }, [])
+
+  // when empresaId changes, fetch users filtered by role 'auditor' using the new backend endpoint
+  useEffect(() => {
+    if (!empresaId) {
+      setAdmins([])
+      return
+    }
+
+    let mounted = true
+    ;(async () => {
+      try {
+        const list = await userService.getUsersRolDTO(Number(empresaId), 'auditor')
+        if (!mounted) return
+        setAdmins(list)
+      } catch (e) {
+        // fallback: clear list on error
+        if (mounted) setAdmins([])
+      }
+    })()
+
+    return () => {
+      mounted = false
+    }
+  }, [empresaId])
 
   const isFilled = (v: any) => v !== '' && v !== null && v !== undefined && !(typeof v === 'string' && v.trim() === '')
 

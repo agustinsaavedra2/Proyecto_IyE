@@ -1,12 +1,16 @@
 package com.backendie.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name="planes")
 @Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class Plan {
 
@@ -22,10 +26,17 @@ public class Plan {
 
     private Integer duracionMeses; // Duración en meses
 
-    public Plan(String nombre, Double precio, Integer maxUsuarios, Integer duracionMeses) {
+    private Integer maxConsultasMensuales;
+
+    private Boolean unlimited;
+
+    public Plan(String nombre, Double precio, Integer maxUsuarios, Integer duracionMeses, Integer maxConsultasMensuales, Boolean unlimited) {
         this.nombre = nombre;
         this.precio = precio;
         this.maxUsuarios = maxUsuarios;
         this.duracionMeses = duracionMeses;
+        this.maxConsultasMensuales = maxConsultasMensuales;
+        this.unlimited = unlimited;
+
     }
 }

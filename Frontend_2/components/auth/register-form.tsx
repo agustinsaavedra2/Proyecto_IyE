@@ -224,7 +224,6 @@ export function RegisterForm() {
                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setFormUser({ ...formUser, rol: e.target.value as any })}
               >
                 <option value="viewer">viewer</option>
-                <option value="admin">admin</option>
                 <option value="complianceofficer">complianceofficer</option>
                 <option value="auditor">auditor</option>
               </select>

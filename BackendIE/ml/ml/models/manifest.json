@@ -1,0 +1,5 @@
+{
+  "model_type": "logreg",
+  "accuracy": 0.6153846153846154,
+  "n_samples": 129
+}

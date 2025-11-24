@@ -11,7 +11,11 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -31,6 +35,8 @@ public class UsuarioService {
     private final Logger log = LoggerFactory.getLogger(UsuarioService.class);
 
 
+    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     public Usuario registerAdmin(String nombre, String email, String passwordHash) {
         if (nombre.isEmpty() || email.isEmpty() || passwordHash.isEmpty()) {
             throw new IllegalArgumentException("All fields are required");
@@ -38,10 +44,11 @@ public class UsuarioService {
         if (usuarioRepository.findByEmail(email) != null) {
             throw new IllegalArgumentException("Email already in use");
         }
+        String hashed = passwordEncoder.encode(passwordHash);
         Usuario usuario = Usuario.builder()
             .nombre(nombre)
             .email(email)
-            .passwordHash(passwordHash)
+            .passwordHash(hashed)
             .rol(ADMIN_ROLE)
             .build();
         return usuarioRepository.save(usuario);
@@ -87,11 +94,12 @@ public class UsuarioService {
         if (empresa == null) {
             throw new IllegalArgumentException("Empresa not found");
         }
+        String hashed = passwordEncoder.encode(passwordHash);
         Usuario usuario = Usuario.builder()
                 .empresaId(empresaId)
                 .nombre(nombre)
                 .email(email)
-                .passwordHash(passwordHash)
+                .passwordHash(hashed)
                 .rol(rol)
                 .build();
         usuarioRepository.save(usuario);
@@ -110,7 +118,7 @@ public class UsuarioService {
         Usuario usuario = new Usuario();
         usuario.setNombre(nombre);
         usuario.setEmail(email);
-        usuario.setPasswordHash(password);
+        usuario.setPasswordHash(passwordEncoder.encode(password));
         usuario.setRol(ADMIN_ROLE);
         usuario.setActivo(false);
         usuarioRepository.save(usuario);
@@ -119,7 +127,6 @@ public class UsuarioService {
         try {
             emailService.sendVerificationEmail(email, token);
         } catch (Exception e) {
-            // Should not happen because EmailService swallows MailException, but be defensive
             log.error("Error intentando enviar correo de verificación para {}: {}", email, e.toString());
         }
     }
@@ -134,6 +141,7 @@ public class UsuarioService {
                 .empresaId(empresaId)
                 .nombre(nombre)
                 .email(email)
+                .passwordHash(passwordEncoder.encode(password))
                 .activo(false)
                 .build();
         usuarioRepository.save(usuario);
@@ -159,9 +167,20 @@ public class UsuarioService {
         usuarioRepository.save(usuario);
     }
 
+    public Usuario authenticate(String email, String password) {
+        if (email == null || password == null) throw new IllegalArgumentException("Datos requeridos");
+        Usuario usuario = usuarioRepository.findByEmail(email);
+        if (usuario != null && passwordEncoder.matches(password, usuario.getPasswordHash())) {
+            usuario.setUltimoAcceso(LocalDateTime.now());
+            usuarioRepository.save(usuario);
+            return usuario;
+        }
+        return null;
+    }
+
     public boolean login(String email, String password) {
         Usuario usuario = usuarioRepository.findByEmail(email);
-        return usuario != null && usuario.getPasswordHash().equals(password);
+        return usuario != null && passwordEncoder.matches(password, usuario.getPasswordHash());
     }
 
     public List<UserDTO> getusersDTO() {
@@ -175,5 +194,28 @@ public class UsuarioService {
                         .rol(usuario.getRol())
                         .activo(usuario.getActivo())
                         .build()).toList();
+    }
+
+    public List<EmpresaDTO> getusersRolDTO(Long empresaId, String rol) {
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        return usuarios.stream()
+                .filter(u -> empresaId.equals(u.getEmpresaId()) && rol.equals(u.getRol()))
+                .map(usuario -> EmpresaDTO.builder()
+                        .id(usuario.getId())
+                        .nombre(usuario.getNombre())
+                        .build()).toList();
+    }
+
+    public Long getCategoriaIdByEmail(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email);
+        if (usuario != null) {
+            return empresaRepository.findById(usuario.getEmpresaId()).map(
+                    e -> e.getCategoriaId())
+                    .orElse(null);
+        } else return null;
+    }
+
+    public Usuario getById(Long id) {
+        return usuarioRepository.findById(id).orElse(null);
     }
 }

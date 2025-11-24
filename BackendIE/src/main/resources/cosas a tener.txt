@@ -1,0 +1,434 @@
+Necesito que me digas todo lo que esta implementado para el problema:
+Desafío 3: ComplianceBot Dificultad: Media-Alta Problema Global: Las startups gastan miles de dólares y cientos de horas en cumplimiento regulatorio. El 60 % falla en auditorías por falta de documentación. Desafío: Desarrollar un SaaS que automatice: Generación de políticas y procedimientos; Tracking de cumplimiento normativo ; Auditorías automatizadas; Gestión de riesgos; Certificaciones (ISO, SOC2, GDPR); Reportes para inversionistas; Potencial de Mercado: 10,000+ startups en LATAM, crecimiento 25 % anual. Modelo de Negocio: Suscripci´on anual ($2,000-$10,000 USD) según tamaño y complejidad.
+
+
+
+
+Dificultad: Media-Alta Problema Global:
+Las startups gastan miles de d´olares y cientos de horas en cumplimiento regulatorio.
+El 60% falla en auditor´ıas por falta de documentaci´on.
+Desaf´ıo: Desarrollar un SaaS que automatice:
+Generaci´on de pol´ıticas y procedimientos
+Tracking de cumplimiento normativo
+Auditor´ıas automatizadas
+Gesti´on de riesgos
+Certificaciones (ISO, SOC2, GDPR)
+Reportes para inversionistas
+Potencial de Mercado: 10,000+ startups en LATAM, crecimiento 25% anual.
+Modelo de Negocio: Suscripci´on anual ($2,000-$10,000 USD) seg´un tama˜no y complejidad.
+
+
+
+donde tenemos que cuplir como minimo:
+Auditor ́ıas Automatizadas para MiPymes Desaf ́ıo ML: Clasificaci ́on de Riesgos y Generaci ́on de Documentos Contexto: Su plataforma automatiza auditor ́ıas de cumplimiento para restaurantes y MiPymes. Problema a Resolver:  1. Clasificaci ́on de Riesgos de Cumplimiento: Desarrollar un modelo que clasifi- que el nivel de riesgo de una empresa:  An ́alisis de documentos y pol ́ıticas existentes Historial de incumplimientos  7  Sector de la industria Tama ̃no y complejidad de operaciones 2. Generaci ́on Inteligente de Documentos: Usar NLP para generar documentos de compliance personalizados: Pol ́ıticas de seguridad alimentaria Protocolos de higiene Manuales de procedimientos  Entregables Esperados: Modelo de clasificaci ́on multi-clase (Alto/Medio/Bajo riesgo) con accuracy > 80 % Sistema de extracci ́on de entidades de documentos legales (NER) Generador de documentos usando templates y LLM con fine-tuning Score de compliance autom ́atico con explicabilidad Dataset Sugerido: Documentos p ́ublicos de normativas chilenas, casos de sanciones de la Direcci ́on del Trabajo.
+
+
+RF:
+1) Gestión de usuarios y roles
+- Registro y autenticación de usuarios con diferentes niveles de acceso (ej. administrador, auditor, empleado, inversionista).
+- Control de permisos basados en rol (RBAC).
+
+2) Generación de políticas y procedimientos
+- Plantillas dinámicas personalizables para crear políticas corporativas.
+- Editor en línea para modificar y versionar políticas.
+- Histórico de cambios y control de versiones.
+
+3) Tracking de cumplimiento normativo
+- Panel de control con el estado de cumplimiento (ISO, SOC2, GDPR, etc.).
+- Alertas automáticas sobre vencimientos de normativas o auditorías pendientes.
+- Registro de evidencia documental para cada requisito normativo.
+
+4) Auditorías automatizadas
+- Ejecución de checklists configurables para cada estándar.
+- Generación automática de informes de auditoría.
+- Identificación de no conformidades y propuestas de acción correctiva.
+
+5) Gestión de riesgos
+- Matriz de riesgos configurable (probabilidad × impacto).
+- Registro y seguimiento de incidentes.
+- Planes de mitigación con responsables asignados.
+
+6) Certificaciones
+- Módulo de seguimiento del progreso hacia certificaciones (ej. ISO 27001, SOC2, GDPR).
+- Documentación centralizada vinculada a cada control requerido.
+- Checklist de requisitos específicos por certificación.
+
+7) Reportes para inversionistas y stakeholders
+- Reportes ejecutivos de estado de cumplimiento y riesgos.
+- Visualizaciones (gráficas, dashboards exportables en PDF/Excel).
+- Acceso seguro para terceros (inversionistas/auditores externos).
+
+8) Integraciones
+- API para integración con otras herramientas (ej. Jira, Slack, Notion, Google Workspace).
+- Importación/exportación de documentos desde almacenamiento en la nube (Google Drive, OneDrive, Dropbox).
+
+9) Diseño MultiTenant
+
+- Optar por esquema multi-tenant compartido con aislación de datos por cliente utilizando schemas separados en la base de datos.
+- Garantizar seguridad y aislamiento con Row-Level Security en PostgreSQL.
+- Control de acceso granular con RBAC por tennant y usuario.
+
+Requerimientos no funcionales:
+- Documentación completa del software realizado
+- Pruebas automatizadas
+- La interfaz del software debe ser clara y fácil de utilizar
+- Acceso responsivo desde navegadores web
+-Tiempos de respuesta menores a 2 segundos
+- Pruebas unitarias automatizadas
+- Copia de seguridad de los datos
+
+
+Modelo de pago:
+Varios tipos de suscripción por cantidad de consultas (en base al IP de la persona que esté usando el sistema).
+Hay tres tipos de suscripciones definidas (modelo Freemium):
+- Plan gratis con máximo 10 consultas.
+- Plan de suscripción con un máximo de 100 consultas mensuales ($15 USD).
+- Plan de suscripción con consultas ilimitadas ($20 USD).
+
+Consultas: Da información sobre las normativas a cumplir, por ejemplo, si consulta una empresa que maneja un local de comida le dará normativas sobre ese tipo de local. 
+
+Target Inicial: 100 primeros restaurantes ubicados en la Región Metropolitana de Santiago.
+
+Posicionamiento: Se tiene una IA especializada para la creación de políticas y procedimientos para startups.
+
+Propuesta de valor:
+Plataforma de compliance automatizado con uso de IA y
+multitenant para generación automática de documentos legales necesarios según la mipyme,
+adecuándose a sus necesidades incluyendo la simulación de una auditoría para la preparación previa de la real,
+análisis de riesgos y posibles mejoras que se tienen al momento de la generación de dichos documentos,
+Incluyendo las posibles mejoras.
+
+
+Teniendo vital importancia lo del Multi Tenant, y el OLLAMA de docker, nginx y etc...
+
+Prototipo Funcional: MVP que demuestre viabilidad t ́ecnica Validaci ́on de Mercado: Evidencia de interacci ́on real con usuarios Modelo de Negocio: Canvas coherente y estrategia GTM clara Trabajo en Equipo: Distribuci ́on efectiva de roles y responsabilidades Innovaci ́on: Aplicaci ́on creativa de tecnolog ́ıa para resolver problemas reales
+
+
+
+
+
+
+
+-------------------------------------------------------------------------------------
+# docker-compose.yml
+version: '3.8'
+
+services:
+  # NGINX Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: compliancebot-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./infrastructure/nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - frontend
+      - backend
+      - ml-java-service
+    networks:
+      - compliancebot-network
+    restart: unless-stopped
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: compliancebot-postgres
+    environment:
+      POSTGRES_DB: compliancebot
+      POSTGRES_USER: compliancebot
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password123}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/postgresql/init_schema.sql:/docker-entrypoint-initdb.d/01_init_schema.sql
+      - ./database/postgresql/sample_data.sql:/docker-entrypoint-initdb.d/02_sample_data.sql
+    networks:
+      - compliancebot-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U compliancebot"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # MongoDB
+  mongodb:
+    image: mongo:7
+    container_name: compliancebot-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-admin123}
+      MONGO_INITDB_DATABASE: compliancebot
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+      - ./database/mongodb/init.js:/docker-entrypoint-initdb.d/init.js
+    networks:
+      - compliancebot-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: compliancebot-redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis123}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - compliancebot-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Ollama optimizado para CPU (Modelo pequeño)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: compliancebot-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - compliancebot-network
+    restart: unless-stopped
+    environment:
+      - OLLAMA_KEEP_ALIVE=5m
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_NUM_PARALLEL=1  # Solo 1 request paralelo para CPU
+      - OLLAMA_MAX_LOADED_MODELS=1
+      - OLLAMA_FLASH_ATTENTION=false
+      - OLLAMA_NUM_THREAD=0  # Auto-detect CPU cores
+      - OLLAMA_NOPRUNE=false
+    deploy:
+      resources:
+        limits:
+          memory: 4G  # Límite de memoria más bajo
+          cpus: '2.0'
+        reservations:
+          memory: 2G
+          cpus: '1.0'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 60s
+      timeout: 30s
+      retries: 3
+
+  # Inicializador de modelo Llama pequeño
+  ollama-init:
+    image: curlimages/curl:latest
+    container_name: compliancebot-ollama-init
+    depends_on:
+      ollama:
+        condition: service_healthy
+    networks:
+      - compliancebot-network
+    command: >
+      sh -c "
+        echo 'Waiting for Ollama to be ready...';
+        while ! curl -s http://ollama:11434/api/tags > /dev/null; do
+          echo 'Ollama not ready, waiting 10 seconds...';
+          sleep 10;
+        done;
+        echo 'Ollama is ready! Pulling Llama 3.2 3B model (optimized for CPU)...';
+        curl -X POST http://ollama:11434/api/pull -d '{\"name\": \"llama3.2:3b\"}' ||
+        curl -X POST http://ollama:11434/api/pull -d '{\"name\": \"llama3.2:1b\"}';
+        echo 'Model pull completed!';
+      "
+    restart: no
+
+  # Spring Boot Backend Principal
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: compliancebot-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: compliancebot
+      DB_USERNAME: compliancebot
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-password123}
+      MONGO_HOST: mongodb
+      MONGO_PORT: 27017
+      MONGO_DB: compliancebot
+      MONGO_USERNAME: compliancebot
+      MONGO_PASSWORD: ${MONGO_PASSWORD:-password123}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis123}
+      ML_SERVICE_URL: http://ml-java-service:8001/ml/v1
+      JWT_SECRET: ${JWT_SECRET:-your-jwt-secret-key}
+      LOG_LEVEL: INFO
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - compliancebot-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+  # ML Service Java
+  ml-java-service:
+    build:
+      context: ./ml-java-service
+      dockerfile: Dockerfile
+    container_name: compliancebot-ml-java
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      OLLAMA_BASE_URL: http://ollama:11434
+      OLLAMA_MODEL: llama3.2:3b
+      MONGO_HOST: mongodb
+      MONGO_PORT: 27017
+      MONGO_DB: compliancebot
+      MONGO_USERNAME: compliancebot
+      MONGO_PASSWORD: ${MONGO_PASSWORD:-password123}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis123}
+      LOG_LEVEL: INFO
+      ML_MAX_CONCURRENT: 2  # Limitado para CPU
+      OLLAMA_NUM_THREADS: 0  # Auto-detect
+    ports:
+      - "8001:8001"
+    depends_on:
+      - ollama
+      - mongodb
+      - redis
+      - ollama-init
+    networks:
+      - compliancebot-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/ml/v1/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 180s
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: compliancebot-frontend
+    environment:
+      REACT_APP_API_URL: http://localhost/api/v1
+      REACT_APP_ML_API_URL: http://localhost/ml/v1
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+      - ml-java-service
+    networks:
+      - compliancebot-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+  # Monitoring ligero para CPU
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: compliancebot-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infrastructure/monitoring/prometheus-light.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=7d'  # Retención más corta
+      - '--web.enable-lifecycle'
+    networks:
+      - compliancebot-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+
+  # Grafana ligero
+  grafana:
+    image: grafana/grafana:latest
+    container_name: compliancebot-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin123}
+      GF_INSTALL_PLUGINS: ""  # Sin plugins extras
+      GF_USERS_ALLOW_SIGN_UP: false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infrastructure/monitoring/grafana-light:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    networks:
+      - compliancebot-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+
+volumes:
+  postgres_data:
+  mongodb_data:
+  redis_data:
+  ollama_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  compliancebot-network:
+    driver: bridge

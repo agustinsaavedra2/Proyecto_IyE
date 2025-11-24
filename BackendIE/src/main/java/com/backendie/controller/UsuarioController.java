@@ -2,8 +2,11 @@ package com.backendie.controller;
 
 import com.backendie.dtos.*;
 import com.backendie.models.Usuario;
+import com.backendie.security.JwtUtil;
+import com.backendie.security.RefreshTokenService;
 import com.backendie.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,6 +18,8 @@ import java.util.List;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final JwtUtil jwtUtil;
+    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("/registerAdmin")
     public Usuario registerAdmin(@RequestBody RegisterAdmin registerAdmin){
@@ -27,8 +32,18 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public Boolean login(@RequestBody Loginuserdto loginData){
-        return usuarioService.login(loginData.getEmail(), loginData.getPassword());
+    public ResponseEntity<JwtResponse> login(@RequestBody Loginuserdto loginData){
+        Usuario usuario = usuarioService.authenticate(loginData.getEmail(), loginData.getPassword());
+        if (usuario == null) {
+            return ResponseEntity.status(401).build();
+        }
+        List<String> roles = usuario.getRol() != null ? List.of(usuario.getRol()) : List.of();
+        int tokenVersion = usuario.getTokenVersion() == null ? 0 : usuario.getTokenVersion();
+        String token = jwtUtil.generateToken(usuario.getEmail(), roles, tokenVersion);
+        String refresh = refreshTokenService.createRefreshToken(usuario.getId());
+        long expiresSeconds = jwtUtil.getExpirationSeconds();
+        JwtResponse resp = JwtResponse.builder().token(token).refreshToken(refresh).expiresIn(expiresSeconds).build();
+        return ResponseEntity.ok(resp);
     }
 
     @PostMapping("/request-register")
@@ -60,6 +75,11 @@ public class UsuarioController {
     @GetMapping("/usersdto")
     public List<EmpresaDTO> getusersempresaDTO(@RequestParam ("empresaId") Long empresaId) {
         return usuarioService.getUsuariosEmpresaDTO(empresaId);
+    }
+
+    @GetMapping("/usersRol")
+    public List<EmpresaDTO> getusersRolDTO(@RequestParam ("empresaId") Long empresaId, @RequestParam ("rol") String rol) {
+        return usuarioService.getusersRolDTO(empresaId, rol);
     }
 
     @GetMapping("/users")

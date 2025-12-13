@@ -8,10 +8,21 @@ Requisitos:
 
 Levantar servicios:
 
-1) Crear archivo `.env` con las variables necesarias.
-2) Levantar servicios:
+1) Crear archivo `.env` con las variables necesarias:
+   - DB_PASSWORD= Contraseña de base de datos postgres
+   - TOKEN_SECRET= String de largo 40 bytes, se puede generar con: 
+```powershell
+powershell -Command "$random = -join ((65..90) + (97..122) + (48..57) | Get-Random -Count 40 | ForEach-Object {[char]$_}); [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($random))"
+```
+   - FRONTEND_URL=http://localhost:3001
+   - EMAIL_USERNAME=Correo
+   - EMAIL_FROM=Correo
+   - EMAIL_PASSWORD= App_Password (privada)
 
-   docker compose up --build
+2) Levantar servicios:
+```
+docker compose up --build
+```
 
 Servicios expuestos:
 - Backend: http://localhost:8080

@@ -25,5 +25,4 @@ COPY --from=build /app/opentelemetry-javaagent.jar /opt/opentelemetry/openteleme
 
 EXPOSE 8080
 
-# Use the OTEL agent if present; the agent will be a no-op if env vars not set.
 ENTRYPOINT ["sh","-c","if [ -f /opt/opentelemetry/opentelemetry-javaagent.jar ]; then exec java -javaagent:/opt/opentelemetry/opentelemetry-javaagent.jar -jar /app/app.jar; else exec java -jar /app/app.jar; fi"]

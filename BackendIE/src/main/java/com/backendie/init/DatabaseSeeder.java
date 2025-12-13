@@ -116,6 +116,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .email("maria.lopez@bancocontinental.com")
                 .passwordHash(passwordEncoder.encode("password123"))
                 .rol("admin")
+                .tokenVersion(0)
                 .activo(true)
                 .build();
         adminA = usuarioRepository.save(adminA);
@@ -129,6 +130,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .email("carlos.perez@bancocontinental.com")
                 .passwordHash(passwordEncoder.encode("password123"))
                 .rol("complianceofficer")
+                .tokenVersion(0)
                 .activo(true)
                 .build();
         userA1 = usuarioRepository.save(userA1);
@@ -154,6 +156,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .email("andres.gomez@clinicavida.com")
                 .passwordHash(passwordEncoder.encode("password123"))
                 .rol("admin")
+                .tokenVersion(0)
                 .activo(true)
                 .build();
         adminB = usuarioRepository.save(adminB);
@@ -167,6 +170,7 @@ public class DatabaseSeeder implements CommandLineRunner {
                 .email("lucia.ramirez@clinicavida.com")
                 .passwordHash(passwordEncoder.encode("password123"))
                 .rol("auditor")
+                .tokenVersion(0)
                 .activo(true)
                 .build();
         userB1 = usuarioRepository.save(userB1);
@@ -262,7 +266,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         }
 
         if (ollamaRepo.count() == 0) {
-            Empresa a = empresaRepository.findAll().getFirst();
+            Empresa a = empresaRepository.findAll().iterator().next();
             OllamaResponse response = OllamaResponse.builder()
                     .empresaId(a.getId())
                     .usuarioId(usuarioRepository.findAll().iterator().next().getId())

@@ -21,7 +21,6 @@ public class EnvLogger implements ApplicationListener<ApplicationEnvironmentPrep
         log.info("spring.datasource.url={}", url);
         log.info("spring.datasource.username={}", user);
         log.info("spring.datasource.password={}", pass == null ? "null" : "**** (oculto)");
-        // También muestra variables de entorno del sistema (útil para verificar .env)
         log.debug("OS ENV SPRING_DATASOURCE_URL={}", System.getenv("SPRING_DATASOURCE_URL"));
         log.debug("OS ENV SPRING_DATASOURCE_USERNAME={}", System.getenv("SPRING_DATASOURCE_USERNAME"));
         // NO imprimir System.getenv("SPRING_DATASOURCE_PASSWORD") en producción

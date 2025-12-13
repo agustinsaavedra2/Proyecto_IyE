@@ -13,7 +13,7 @@
 - Histórico de cambios y control de versiones.
 
 
-3) Tracking de cumplimiento normativo
+3) Tracking de cumplimiento normativao
 
 - Panel de control con el estado de cumplimiento (ISO, SOC2, GDPR, etc.).
 - Alertas automáticas sobre vencimientos de normativas o auditorías pendientes.

@@ -34,15 +34,38 @@ export async function apiFetcher(path: string, options?: RequestInit) {
 
   const url = `${base}${path}`
 
+  // Client detection to allow localStorage and console debug only in browser
+  const isClient = typeof window !== 'undefined'
+
   let res: Response
   try {
+    const defaultHeaders = { 'Content-Type': 'application/json' }
+    const providedHeaders = (options && (options as any).headers) || {}
+    const headers = { ...defaultHeaders, ...providedHeaders }
+
+    // When running in the browser, automatically attach a stored JWT if present
+    if (isClient) {
+      try {
+        const token = localStorage.getItem('token')
+        if (token && !headers['Authorization'] && !headers['authorization']) {
+          headers['Authorization'] = `Bearer ${token}`
+        }
+      } catch (e) {
+        // ignore localStorage issues
+      }
+    }
+
+    if (isClient) console.debug('[apiFetcher] fetch', url, { ...options, headers })
+
     res = await fetch(url, {
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       ...options,
     })
   } catch (err: any) {
     // Network/connection error — wrap in ApiError with status 0 so callers can
     // detect network failures separately from HTTP errors.
+    // eslint-disable-next-line no-console
+    console.error('[apiFetcher] network error', err)
     throw new ApiError(0, null, err?.message || 'Network error')
   }
 

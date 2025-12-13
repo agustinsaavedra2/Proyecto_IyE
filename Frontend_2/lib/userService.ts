@@ -16,7 +16,8 @@ export async function registerUser(data: RegisterUserDTO): Promise<UsuarioDTO> {
   })
 }
 
-export async function login(data: LoginDTO): Promise<Boolean> {
+export async function login(data: LoginDTO): Promise<any> {
+  // returns the backend JwtResponse: { token, refreshToken, expiresIn }
   return apiFetcher('/api/usuarios/login', {
     method: 'POST',
     body: JSON.stringify(data),

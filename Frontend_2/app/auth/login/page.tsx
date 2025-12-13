@@ -22,8 +22,18 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true)
     try {
-      const ok = await login({ email, password })
-      if (ok) {
+      const resp = await login({ email, password })
+      // If backend returns the JwtResponse with token, store it for subsequent requests
+      if (resp && resp.token) {
+        try {
+          localStorage.setItem('token', resp.token)
+        } catch (e) {
+          // ignore storage errors
+        }
+        toast({ title: 'Bienvenido', description: 'Has iniciado sesión correctamente.' })
+        router.push('/dashboard')
+      } else if (resp === true) {
+        // backward compatibility: some backends returned boolean
         toast({ title: 'Bienvenido', description: 'Has iniciado sesión correctamente.' })
         router.push('/dashboard')
       } else {

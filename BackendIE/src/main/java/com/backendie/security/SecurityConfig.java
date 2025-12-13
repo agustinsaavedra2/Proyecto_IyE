@@ -78,7 +78,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsFilter corsFilter(@Value("${app.cors.allowed-origins:http://localhost:3000}") List<String> allowedOrigins) {
+    public CorsFilter corsFilter(@Value("${app.cors.allowed-origins:http://localhost:3001}") List<String> allowedOrigins) {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);

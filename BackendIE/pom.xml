@@ -22,6 +22,19 @@
 	<dependencies>
 
         <dependency>
+            <groupId>one.stayfocused.spring</groupId>
+            <artifactId>dotenv-spring-boot</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.crac</groupId>
+            <artifactId>crac</artifactId>
+            <version>1.5.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
         </dependency>
@@ -58,7 +71,6 @@
         <dependency>
             <groupId>com.github.vladimir-bukhtoyarov</groupId>
             <artifactId>bucket4j-core</artifactId>
-            <!-- Use a stable version available in Maven Central -->
             <version>7.6.0</version>
         </dependency>
 

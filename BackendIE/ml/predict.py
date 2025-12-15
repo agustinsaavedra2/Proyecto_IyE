@@ -46,6 +46,15 @@ def predict(text, vect, model):
     }
 
 
+# Wrapper conveniente que carga artefactos internamente
+def predict_text(text):
+    """Predice usando los artefactos guardados en ml/models. Devuelve diccionario.
+    Lanza FileNotFoundError si faltan artefactos.
+    """
+    vect, model = load_artifacts()
+    return predict(text, vect, model)
+
+
 def main():
     if len(sys.argv) > 1:
         text = ' '.join(sys.argv[1:])
@@ -63,4 +72,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

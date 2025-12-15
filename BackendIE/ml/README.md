@@ -1,24 +1,27 @@
-Dataset preparation for ML
+ML dentro de BackendIE
 
-Place public Chilean normative documents and sanction cases into `ml/dataset/`.
-Recommended sources:
+Instrucciones rápidas
 
-- Biblioteca del Congreso Nacional de Chile: https://www.bcn.cl/ (laws and decrees)
-- Biblioteca Jurídica de Chile: https://www.biblioteca.juridica.org/ (legal repos)
-- Dirección del Trabajo (Chile): https://www.dt.gob.cl/ (cases, sanctions, resolutions)
-- Ministerio de Salud: https://www.minsal.cl/ (sanitary regulations)
+1) Instalar dependencias (virtualenv recomendado):
+   cd ml/service; pip install -r requirements.txt
 
-Options to populate the dataset:
+2) Entrenar (si tienes `ml/index.jsonl`):
+   python ../trainer.py --index ../index.jsonl --out-dir ../models
 
-- Manual download: visit the above sites and download PDFs into `ml/dataset/`.
-- URL list: create `ml/urls.txt` with PDF URLs (one per line) and run `prepare_dataset.py --download-urls` to fetch PDFs.
+3) Ejecutar servicio de predicción (espera encontrar `ml/models/model.joblib` y `vectorizer.joblib`):
+   cd ml/service
+   uvicorn app:app --host 0.0.0.0 --port 8000
 
-Suggested flow:
-1) Collect ~500-2000 documents (laws, regs, sanction reports). Start smaller (50-200) to iterate quickly.
-2) Run: python ml/prepare_dataset.py --dataset-dir ml/dataset --out ml/index.jsonl --chunk-size 1000 --embed
-3) Use `ml/index.jsonl` as input for RAG or for fine-tuning prompts.
+4) Predicción (ejemplo):
+   curl -X POST 'http://localhost:8000/predict' -H 'Content-Type: application/json' -d '{"text":"empresa con multa reciente por incumplimiento"}'
 
-Notes on cost and scale:
-- Storing raw PDFs locally is fine; embeddings are heavier. If you want to save space, compute embeddings once and store vector store (pgvector or disk) and remove raw PDFs.
-- You can host documents in S3 and read them on demand; for local dev keep them in `ml/dataset/`.
+Formato `ml/index.jsonl` esperado:
+Cada línea debe ser un JSON con al menos las keys:
+- id: identificador
+- text: texto del chunk
+- meta: objeto con metadata, por ejemplo {"source":"archivo.pdf"}
+- label: (opcional) 'Bajo'|'Medio'|'Alto'
+
+Ejemplo de línea:
+{"id":"doc1_chunk01","text":"...","meta":{"source":"dataset/doc.pdf"},"label":"Alto"}
 

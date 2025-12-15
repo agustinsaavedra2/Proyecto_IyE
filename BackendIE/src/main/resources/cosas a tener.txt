@@ -5,17 +5,17 @@ Desafío 3: ComplianceBot Dificultad: Media-Alta Problema Global: Las startups g
 
 
 Dificultad: Media-Alta Problema Global:
-Las startups gastan miles de d´olares y cientos de horas en cumplimiento regulatorio.
-El 60% falla en auditor´ıas por falta de documentaci´on.
-Desaf´ıo: Desarrollar un SaaS que automatice:
-Generaci´on de pol´ıticas y procedimientos
+Las startups gastan miles de dólares y cientos de horas en cumplimiento regulatorio.
+El 60% falla en auditorías por falta de documentación.
+Desafío: Desarrollar un SaaS que automatice:
+Generación de políticas y procedimientos
 Tracking de cumplimiento normativo
-Auditor´ıas automatizadas
-Gesti´on de riesgos
+Auditorías automatizadas
+Gestión de riesgos
 Certificaciones (ISO, SOC2, GDPR)
 Reportes para inversionistas
 Potencial de Mercado: 10,000+ startups en LATAM, crecimiento 25% anual.
-Modelo de Negocio: Suscripci´on anual ($2,000-$10,000 USD) seg´un tama˜no y complejidad.
+Modelo de Negocio: Suscripción anual ($2,000-$10,000 USD) según tamaño y complejidad.
 
 
 

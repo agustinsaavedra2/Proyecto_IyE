@@ -39,6 +39,22 @@ public class EmpresaService {
         return empresa;
     }
 
+    @Transactional
+    public List<EmpresaDTO> obtenerEmpresasDTO(){
+        List<EmpresaDTO> resumen = new ArrayList<>();
+        Long currentCategoria = TenantContext.getCurrentCategoria();
+        List<Empresa> empresas;
+        if (currentCategoria != null) {
+            empresas = empresaRepository.findResumenByCategoria(currentCategoria);
+        } else {
+            empresas = empresaRepository.findAll();
+        }
+        for (Empresa e : empresas) {
+            resumen.add(new EmpresaDTO(e.getId(), e.getNombre()));
+        }
+        return resumen;
+    }
+
     public Empresa validarEmpresaYUsuario(Long empresaId, Long usuarioId) {
         Empresa empresa = empresaRepository.findById(empresaId)
                 .orElseThrow(() -> new IllegalArgumentException("Empresa no encontrada."));
@@ -51,22 +67,6 @@ public class EmpresaService {
             throw new IllegalArgumentException("La empresa debe estar activa.");
 
         return empresa;
-    }
-
-    @Transactional
-    public List<EmpresaDTO> obtenerEmpresasDTO(){
-        List<EmpresaDTO> resumen = new ArrayList<>();
-        Long currentCategoria = TenantContext.getCurrentCategoria();
-        List<Empresa> empresas;
-        if (currentCategoria != null) {
-            empresas = empresaRepository.findAllByCategoriaId(currentCategoria);
-        } else {
-            empresas = empresaRepository.findAll();
-        }
-        for (Empresa e : empresas) {
-            resumen.add(new EmpresaDTO(e.getId(), e.getNombre()));
-        }
-        return resumen;
     }
 
 }

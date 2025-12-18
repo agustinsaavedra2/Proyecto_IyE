@@ -58,4 +58,27 @@ public class EmailService {
             // swallow to avoid 500; the user remains created as pending
         }
     }
+
+    public void sendEmailWithAttachment(String to, String subject, String htmlBody, byte[] attachmentData, String attachmentFilename) {
+        log.info("Preparando correo con adjunto para: {}", to);
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setFrom(emailFrom);
+            helper.setTo(to);
+            helper.setSubject(subject == null ? "Documento de Compliance" : subject);
+            helper.setText(htmlBody == null ? "Adjunto documento" : htmlBody, true);
+            if (attachmentData != null && attachmentFilename != null) {
+                helper.addAttachment(attachmentFilename, new org.springframework.core.io.ByteArrayResource(attachmentData));
+            }
+            mailSender.send(message);
+            log.info("Correo con adjunto enviado a: {}", to);
+        } catch (MessagingException e) {
+            log.error("Error creando el mensaje con adjunto para {}: {}", to, e.toString());
+            log.debug("MessagingException: ", e);
+        } catch (MailException e) {
+            log.error("No se pudo enviar correo con adjunto a {}: {}", to, e.getMessage());
+            log.debug("MailException: ", e);
+        }
+    }
 }

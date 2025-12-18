@@ -1,0 +1,19 @@
+Opci ́on A: Usando Postman
+Preparar una colecci ́on de Postman con todos los endpoints
+Mostrar las requests y responses en tiempo real
+Demostrar el flujo completo de un caso de uso
+Opci ́on B: Tests Automatizados
+Ejecutar suite de tests que muestre la funcionalidad
+Mostrar cobertura de c ́odigo
+Explicar casos de prueba mientras se ejecutan
+Opci ́on C: Script de Demostraci ́on
+Preparar un script (Python, Node.js, etc.) que consuma la API
+Mostrar las operaciones CRUD principales
+Demostrar validaciones y manejo de errores
+Elementos clave a mostrar:
+1. Creaci ́on de entidades principales
+2. Lectura con filtros y paginaci ́on
+3. Actualizaci ́on con validaciones
+4. Eliminaci ́on y manejo de relaciones
+5. L ́ogica de negocio espec ́ıfica del proyecto
+6. Manejo de errores y casos edge

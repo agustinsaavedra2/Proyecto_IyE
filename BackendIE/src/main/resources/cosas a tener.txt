@@ -20,7 +20,10 @@ Modelo de Negocio: Suscripción anual ($2,000-$10,000 USD) según tamaño y comp
 
 
 donde tenemos que cuplir como minimo:
-Auditor ́ıas Automatizadas para MiPymes Desaf ́ıo ML: Clasificaci ́on de Riesgos y Generaci ́on de Documentos Contexto: Su plataforma automatiza auditor ́ıas de cumplimiento para restaurantes y MiPymes. Problema a Resolver:  1. Clasificaci ́on de Riesgos de Cumplimiento: Desarrollar un modelo que clasifi- que el nivel de riesgo de una empresa:  An ́alisis de documentos y pol ́ıticas existentes Historial de incumplimientos  7  Sector de la industria Tama ̃no y complejidad de operaciones 2. Generaci ́on Inteligente de Documentos: Usar NLP para generar documentos de compliance personalizados: Pol ́ıticas de seguridad alimentaria Protocolos de higiene Manuales de procedimientos  Entregables Esperados: Modelo de clasificaci ́on multi-clase (Alto/Medio/Bajo riesgo) con accuracy > 80 % Sistema de extracci ́on de entidades de documentos legales (NER) Generador de documentos usando templates y LLM con fine-tuning Score de compliance autom ́atico con explicabilidad Dataset Sugerido: Documentos p ́ublicos de normativas chilenas, casos de sanciones de la Direcci ́on del Trabajo.
+Auditorías Automatizadas para MiPymes Desafío ML: Clasificaci ́on de Riesgos y Generaci ́on de Documentos Contexto: Su plataforma automatiza auditor ́ıas de cumplimiento para restaurantes y MiPymes. Problema a Resolver:  1. Clasificaci ́on de Riesgos de Cumplimiento: Desarrollar un modelo que clasifi- que el nivel de riesgo de una empresa:  An ́alisis de documentos y pol ́ıticas existentes Historial de incumplimientos  7  Sector de la industria Tama ̃no y complejidad de operaciones 2. Generaci ́on Inteligente de Documentos: Usar NLP para generar documentos de compliance personalizados: Pol ́ıticas de seguridad alimentaria Protocolos de higiene Manuales de procedimientos  Entregables Esperados:
+Modelo de clasificaci ́on multi-clase (Alto/Medio/Bajo riesgo) con accuracy > 80 % Sistema de extracci ́on de entidades de documentos legales (NER)
+Generador de documentos usando templates y LLM con fine-tuning Score de compliance autom ́atico con explicabilidad Dataset
+Sugerido: Documentos p ́ublicos de normativas chilenas, casos de sanciones de la Direcci ́on del Trabajo.
 
 
 RF:

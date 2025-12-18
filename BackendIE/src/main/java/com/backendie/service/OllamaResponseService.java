@@ -11,6 +11,7 @@ import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.stereotype.Service;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import com.backendie.service.MLModelService; // new: usar predicción del modelo como contexto
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +42,8 @@ public class OllamaResponseService {
     private final RiesgoRepository riesgoRepository;
 
     private final TenantSecurity tenantSecurity;
+
+    private final MLModelService mlModelService; // injected to get model predictions and include them in prompts
 
     public List<OllamaResponse> getAll() {
         return ollamaResponseRepository.findAll();
@@ -135,12 +138,30 @@ public class OllamaResponseService {
             contexto.append("\n\n--- ").append(p.getTitulo()).append(" ---\n").append(p.getContenido());
         }
 
+        // Try to get a model-based prediction to include as additional context
+        String modelHint = "";
+        try {
+            Map<String,Object> modelOut = mlModelService.predict(contexto.toString());
+            if (modelOut != null) {
+                Object lbl = modelOut.getOrDefault("label", modelOut.getOrDefault("risk", null));
+                Object conf = modelOut.getOrDefault("confidence", modelOut.getOrDefault("probabilities", null));
+                if (lbl != null) {
+                    modelHint = "Modelo_sugiere_riesgo: " + lbl.toString();
+                    if (conf instanceof Number) modelHint += " (conf: " + conf.toString() + ")";
+                    else if (conf instanceof List) modelHint += " (probabilidades incluidas)";
+                }
+            }
+        } catch (Exception e) {
+            // ignore model failures and continue with Ollama only; we log for trace
+            System.err.println("Warning: ML model prediction failed while enriching prompt for Ollama classifyRisk: " + e.getMessage());
+        }
+
         String prompt = "Eres un modelo que clasifica el nivel de riesgo de cumplimiento de una empresa en base a sus políticas y documentación. " +
                 "Devuelve la salida usando exactamente estos delimitadores:\n" +
                 "::RISK:: [Alto|Medio|Bajo]\n" +
                 "::CONFIDENCE:: [0-100]\n" +
                 "::EXPLANATION:: [Explicación breve]\n" +
-                "Analiza el siguiente contexto:\n" + contexto + "\n";
+                "Analiza el siguiente contexto:\n" + contexto + "\n" + (modelHint.isBlank() ? "" : "\nADICIONAL_DEL_MODELO:\n" + modelHint + "\n");
 
         String respuesta = ollamaChatModel.call(prompt);
 
@@ -324,7 +345,6 @@ public class OllamaResponseService {
     return ollamaResponseRepository.save(ollamaResponse);
     }
 
-
     /**
      * Helper para parsear la salida de crearAuditoria y guardarla.
      */
@@ -336,7 +356,17 @@ public class OllamaResponseService {
             String scoreStr = extractValue(respuesta, "::SCORE::", "::HALLAZGOS_CRITICOS::").trim();
             score = Double.parseDouble(scoreStr);
         } catch (NumberFormatException e) {
-            System.err.println("Error al parsear el SCORE de Ollama. Usando 0.0 por defecto. Respuesta: " + respuesta);
+            System.err.println("Error al parsear el SCORE de Ollama. Intentando extraer número por regex. Respuesta: " + respuesta);
+            // Fallback: buscar primer número entre 0 y 100 en la respuesta
+            try {
+                java.util.regex.Matcher m = java.util.regex.Pattern.compile("(\\d{1,3}(?:\\.\\d+)?)").matcher(respuesta);
+                if (m.find()) {
+                    double val = Double.parseDouble(m.group(1));
+                    if (val >= 0.0 && val <= 100.0) score = val;
+                }
+            } catch (Exception ex) {
+                // ignore
+            }
         }
 
         String criticosRaw = extractValue(respuesta, "::HALLAZGOS_CRITICOS::", "::HALLAZGOS_MAYORES::");

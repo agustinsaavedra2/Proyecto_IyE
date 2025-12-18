@@ -1,0 +1,12 @@
+scikit-learn
+pandas
+numpy
+joblib
+fastapi
+uvicorn
+requests
+xgboost
+PyPDF2
+pdfminer.six
+pytest
+

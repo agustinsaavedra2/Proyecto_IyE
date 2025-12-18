@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationFilter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
@@ -55,10 +56,10 @@ public class SecurityConfig {
         // Rate limit early (before security context is established)
         http.addFilterBefore(rateLimitFilter, SecurityContextHolderFilter.class);
 
-        // Ensure Categoria filter runs after authentication is established
-        http.addFilterAfter(categoriaTenanFilter, SecurityContextHolderFilter.class);
+        // Ensure Categoria filter runs after the Bearer token authentication filter so SecurityContext is populated
+        http.addFilterAfter(categoriaTenanFilter, BearerTokenAuthenticationFilter.class);
         // Token version check after authentication is established
-        http.addFilterAfter(tokenVersionFilter, SecurityContextHolderFilter.class);
+        http.addFilterAfter(tokenVersionFilter, BearerTokenAuthenticationFilter.class);
 
         return http.build();
     }

@@ -20,7 +20,6 @@ import java.io.IOException;
 public class CategoriaTenanFilter extends OncePerRequestFilter {
 
     private final UsuarioService usuarioService;
-    private final TenantHibernateFilter tenantHibernateFilter;
     private final EmpresaRepository empresaRepository;
 
     @Override
@@ -29,19 +28,18 @@ public class CategoriaTenanFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException{
         try{
             String headerCategoria = request.getHeader("X-Categoria-id");
-            if (headerCategoria != null && !headerCategoria.isBlank())  {
+
+            if (headerCategoria != null && !headerCategoria.isBlank()) {
                 try {
-                    // Try to interpret header as empresaId first; if found, use its categoriaId
                     Long parsed = Long.valueOf(headerCategoria);
                     Empresa e = empresaRepository.findById(parsed).orElse(null);
                     if (e != null) {
                         TenantContext.setCurrentCategoria(e.getCategoriaId());
                     } else {
-                        // Not an empresa id, treat as categoria id
                         TenantContext.setCurrentCategoria(parsed);
                     }
-                } catch (NumberFormatException ignored){
-                    // if it's not numeric, ignore and continue
+                } catch (NumberFormatException ex) {
+                    // ignore
                 }
             } else {
                 Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -52,15 +50,10 @@ public class CategoriaTenanFilter extends OncePerRequestFilter {
                     }
                 }
             }
-            // enable hibernate filter for JPA queries
-            Long cat = TenantContext.getCurrentCategoria();
-            if (cat != null) {
-                tenantHibernateFilter.enableCategoriaFilter(cat);
-            }
 
+            // Tenant resolution only.
             filterChain.doFilter(request, response);
         } finally {
-            tenantHibernateFilter.disableCategoriaFilter();
             TenantContext.clear();
         }
     }

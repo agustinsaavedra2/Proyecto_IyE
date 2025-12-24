@@ -1,0 +1,602 @@
+﻿{
+    "baseUrl":  "http://localhost:8080",
+    "runAt":  "22/12/2025 0:25:29",
+    "results":  [
+                    {
+                        "resp":  {
+                                     "status":  503,
+                                     "error":  "Error en el servidor remoto: (503) Servidor no disponible.",
+                                     "responseDescription":  "{\"status\":\"DOWN\",\"components\":{\"db\":{\"status\":\"UP\",\"details\":{\"database\":\"PostgreSQL\",\"validationQuery\":\"isValid()\"}},\"diskSpace\":{\"status\":\"UP\",\"details\":{\"total\":478117978112,\"free\":178749423616,\"threshold\":10485760,\"path\":\"C:\\\\Users\\\\Duvan\\\\Desktop\\\\Innovacion y emprendimiento\\\\Proyecto_para_Pep_1\\\\Proyecto_IyE\\\\BackendIE\\\\.\",\"exists\":true}},\"mail\":{\"status\":\"DOWN\",\"details\":{\"location\":\"smtp.gmail.com:587\",\"error\":\"jakarta.mail.MessagingException: Could not convert socket to TLS\"}},\"mongo\":{\"status\":\"UP\",\"details\":{\"maxWireVersion\":25}},\"ping\":{\"status\":\"UP\"},\"ssl\":{\"status\":\"UP\",\"details\":{\"validChains\":[],\"invalidChains\":[]}}}}"
+                                 },
+                        "path":  "/actuator/health",
+                        "name":  "actuator/health",
+                        "status":  503
+                    },
+                    {
+                        "resp":  {
+                                     "body":  {
+                                                  "value":  [
+                                                                {
+                                                                    "id":  1,
+                                                                    "nombre":  "Finanzas",
+                                                                    "descripcion":  "Empresas del sector financiero y bancario."
+                                                                },
+                                                                {
+                                                                    "id":  2,
+                                                                    "nombre":  "Salud",
+                                                                    "descripcion":  "Clinicas y prestamos de servicios de salud."
+                                                                },
+                                                                {
+                                                                    "id":  3,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas"
+                                                                },
+                                                                {
+                                                                    "id":  4,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas"
+                                                                },
+                                                                {
+                                                                    "id":  5,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas"
+                                                                },
+                                                                {
+                                                                    "id":  6,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas"
+                                                                },
+                                                                {
+                                                                    "id":  7,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas"
+                                                                },
+                                                                {
+                                                                    "id":  8,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas"
+                                                                },
+                                                                {
+                                                                    "id":  9,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas"
+                                                                },
+                                                                {
+                                                                    "id":  10,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas"
+                                                                },
+                                                                {
+                                                                    "id":  11,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas"
+                                                                },
+                                                                {
+                                                                    "id":  12,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas"
+                                                                },
+                                                                {
+                                                                    "id":  13,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas"
+                                                                }
+                                                            ],
+                                                  "Count":  13
+                                              },
+                                     "status":  200
+                                 },
+                        "path":  "/api/categorias/dto",
+                        "name":  "Listar Categorias DTO",
+                        "status":  200
+                    },
+                    {
+                        "resp":  {
+                                     "body":  {
+                                                  "value":  [
+                                                                {
+                                                                    "id":  1,
+                                                                    "nombre":  "Finanzas",
+                                                                    "descripcion":  "Empresas del sector financiero y bancario.",
+                                                                    "regulaciones":  [
+                                                                                         "RegulaciÃ³n financiera 2023",
+                                                                                         "Ley de protecciÃ³n de datos"
+                                                                                     ]
+                                                                },
+                                                                {
+                                                                    "id":  2,
+                                                                    "nombre":  "Salud",
+                                                                    "descripcion":  "Clinicas y prestamos de servicios de salud.",
+                                                                    "regulaciones":  [
+                                                                                         "Norma sanitaria 2022",
+                                                                                         "RegulaciÃ³n de datos de pacientes"
+                                                                                     ]
+                                                                },
+                                                                {
+                                                                    "id":  3,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas",
+                                                                    "regulaciones":  [
+
+                                                                                     ]
+                                                                },
+                                                                {
+                                                                    "id":  4,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas",
+                                                                    "regulaciones":  [
+
+                                                                                     ]
+                                                                },
+                                                                {
+                                                                    "id":  5,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas",
+                                                                    "regulaciones":  [
+
+                                                                                     ]
+                                                                },
+                                                                {
+                                                                    "id":  6,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas",
+                                                                    "regulaciones":  [
+
+                                                                                     ]
+                                                                },
+                                                                {
+                                                                    "id":  7,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas",
+                                                                    "regulaciones":  [
+
+                                                                                     ]
+                                                                },
+                                                                {
+                                                                    "id":  8,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas",
+                                                                    "regulaciones":  [
+
+                                                                                     ]
+                                                                },
+                                                                {
+                                                                    "id":  9,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas",
+                                                                    "regulaciones":  [
+
+                                                                                     ]
+                                                                },
+                                                                {
+                                                                    "id":  10,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas",
+                                                                    "regulaciones":  [
+
+                                                                                     ]
+                                                                },
+                                                                {
+                                                                    "id":  11,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas",
+                                                                    "regulaciones":  [
+
+                                                                                     ]
+                                                                },
+                                                                {
+                                                                    "id":  12,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas",
+                                                                    "regulaciones":  [
+
+                                                                                     ]
+                                                                },
+                                                                {
+                                                                    "id":  13,
+                                                                    "nombre":  "DemoCategoria",
+                                                                    "descripcion":  "Categoria demo para pruebas",
+                                                                    "regulaciones":  [
+
+                                                                                     ]
+                                                                }
+                                                            ],
+                                                  "Count":  13
+                                              },
+                                     "status":  200
+                                 },
+                        "path":  "/api/categorias/listar",
+                        "name":  "Listar Todas Categorias",
+                        "status":  200
+                    },
+                    {
+                        "resp":  {
+                                     "body":  {
+                                                  "value":  [
+                                                                {
+                                                                    "id":  4,
+                                                                    "nombre":  "Demo S.A."
+                                                                }
+                                                            ],
+                                                  "Count":  1
+                                              },
+                                     "status":  200
+                                 },
+                        "path":  "/api/empresas/resumen",
+                        "name":  "Listar Empresas Resumen",
+                        "status":  200
+                    },
+                    {
+                        "resp":  {
+                                     "body":  {
+                                                  "value":  [
+                                                                {
+                                                                    "id":  2,
+                                                                    "empresaId":  1,
+                                                                    "nombre":  "Carlos PÃ©rez",
+                                                                    "email":  "carlos.perez@bancocontinental.com",
+                                                                    "rol":  "complianceofficer",
+                                                                    "activo":  true
+                                                                },
+                                                                {
+                                                                    "id":  4,
+                                                                    "empresaId":  2,
+                                                                    "nombre":  "LucÃ­a RamÃ­rez",
+                                                                    "email":  "lucia.ramirez@clinicavida.com",
+                                                                    "rol":  "auditor",
+                                                                    "activo":  true
+                                                                },
+                                                                {
+                                                                    "id":  1,
+                                                                    "empresaId":  4,
+                                                                    "nombre":  "MarÃ­a LÃ³pez",
+                                                                    "email":  "maria.lopez@bancocontinental.com",
+                                                                    "rol":  "admin",
+                                                                    "activo":  true
+                                                                },
+                                                                {
+                                                                    "id":  3,
+                                                                    "empresaId":  11,
+                                                                    "nombre":  "AndrÃ©s GÃ³mez",
+                                                                    "email":  "andres.gomez@clinicavida.com",
+                                                                    "rol":  "admin",
+                                                                    "activo":  true
+                                                                }
+                                                            ],
+                                                  "Count":  4
+                                              },
+                                     "status":  200
+                                 },
+                        "path":  "/api/usuarios/users",
+                        "name":  "Listar Usuarios",
+                        "status":  200
+                    },
+                    {
+                        "resp":  {
+                                     "body":  {
+                                                  "value":  [
+                                                                {
+                                                                    "id":  "691bf170bc084de663b71898",
+                                                                    "empresaId":  1,
+                                                                    "titulo":  "Riesgo de fuga de datos",
+                                                                    "descripcion":  "Posible fuga por accesos no autorizados.",
+                                                                    "categoria":  "cumplimiento",
+                                                                    "probabilidad":  "alta",
+                                                                    "impacto":  "alto",
+                                                                    "nivelRiesgo":  "alto",
+                                                                    "medidasMitigacion":  "Implementar DLP y Capacitar empleados",
+                                                                    "responsable":  1,
+                                                                    "estado":  "abierto",
+                                                                    "createdAt":  "2025-12-22T00:25:29.5029941",
+                                                                    "updatedAt":  "2025-12-22T00:25:29.5029941",
+                                                                    "deletedAt":  null
+                                                                },
+                                                                {
+                                                                    "id":  "69486c90064dadf9fe0425f1",
+                                                                    "empresaId":  1,
+                                                                    "titulo":  "Riesgo demo",
+                                                                    "descripcion":  "Demo de riesgo para la presentaciÃ³n",
+                                                                    "categoria":  "compliance",
+                                                                    "probabilidad":  "media",
+                                                                    "impacto":  "medio",
+                                                                    "nivelRiesgo":  "Medio",
+                                                                    "medidasMitigacion":  null,
+                                                                    "responsable":  null,
+                                                                    "estado":  null,
+                                                                    "createdAt":  "2025-12-21T18:54:24.113",
+                                                                    "updatedAt":  "2025-12-21T18:54:24.113",
+                                                                    "deletedAt":  null
+                                                                },
+                                                                {
+                                                                    "id":  "69486ea2064dadf9fe0425f2",
+                                                                    "empresaId":  1,
+                                                                    "titulo":  "Riesgo demo",
+                                                                    "descripcion":  "Demo de riesgo para la presentaciÃ³n",
+                                                                    "categoria":  "compliance",
+                                                                    "probabilidad":  "media",
+                                                                    "impacto":  "medio",
+                                                                    "nivelRiesgo":  "Medio",
+                                                                    "medidasMitigacion":  null,
+                                                                    "responsable":  null,
+                                                                    "estado":  null,
+                                                                    "createdAt":  "2025-12-21T19:03:14.174",
+                                                                    "updatedAt":  "2025-12-21T19:03:14.174",
+                                                                    "deletedAt":  null
+                                                                },
+                                                                {
+                                                                    "id":  "69486eae064dadf9fe0425f3",
+                                                                    "empresaId":  1,
+                                                                    "titulo":  "Riesgo demo",
+                                                                    "descripcion":  "Demo",
+                                                                    "categoria":  "compliance",
+                                                                    "probabilidad":  "media",
+                                                                    "impacto":  "medio",
+                                                                    "nivelRiesgo":  "Medio",
+                                                                    "medidasMitigacion":  null,
+                                                                    "responsable":  null,
+                                                                    "estado":  null,
+                                                                    "createdAt":  "2025-12-21T19:03:26.296",
+                                                                    "updatedAt":  "2025-12-21T19:03:26.296",
+                                                                    "deletedAt":  null
+                                                                },
+                                                                {
+                                                                    "id":  "6948708c064dadf9fe0425f4",
+                                                                    "empresaId":  1,
+                                                                    "titulo":  "Riesgo demo",
+                                                                    "descripcion":  "Demo de riesgo para la presentaciÃ³n",
+                                                                    "categoria":  "compliance",
+                                                                    "probabilidad":  "media",
+                                                                    "impacto":  "medio",
+                                                                    "nivelRiesgo":  "Medio",
+                                                                    "medidasMitigacion":  null,
+                                                                    "responsable":  null,
+                                                                    "estado":  null,
+                                                                    "createdAt":  "2025-12-21T19:11:24.512",
+                                                                    "updatedAt":  "2025-12-21T19:11:24.512",
+                                                                    "deletedAt":  null
+                                                                },
+                                                                {
+                                                                    "id":  "6948713d064dadf9fe0425f5",
+                                                                    "empresaId":  1,
+                                                                    "titulo":  "Riesgo demo",
+                                                                    "descripcion":  "Demo de riesgo para la presentaciÃ³n",
+                                                                    "categoria":  "compliance",
+                                                                    "probabilidad":  "media",
+                                                                    "impacto":  "medio",
+                                                                    "nivelRiesgo":  "Medio",
+                                                                    "medidasMitigacion":  null,
+                                                                    "responsable":  null,
+                                                                    "estado":  null,
+                                                                    "createdAt":  "2025-12-21T19:14:21.22",
+                                                                    "updatedAt":  "2025-12-21T19:14:21.22",
+                                                                    "deletedAt":  null
+                                                                },
+                                                                {
+                                                                    "id":  "69487149064dadf9fe0425f6",
+                                                                    "empresaId":  1,
+                                                                    "titulo":  "Riesgo demo",
+                                                                    "descripcion":  "Demo",
+                                                                    "categoria":  "cumplimiento",
+                                                                    "probabilidad":  "media",
+                                                                    "impacto":  "medio",
+                                                                    "nivelRiesgo":  "Medio",
+                                                                    "medidasMitigacion":  null,
+                                                                    "responsable":  null,
+                                                                    "estado":  null,
+                                                                    "createdAt":  "2025-12-21T19:14:33.866",
+                                                                    "updatedAt":  "2025-12-21T19:14:33.866",
+                                                                    "deletedAt":  null
+                                                                },
+                                                                {
+                                                                    "id":  "69488489064dadf9fe0425f7",
+                                                                    "empresaId":  1,
+                                                                    "titulo":  "Riesgo demo",
+                                                                    "descripcion":  "Demo",
+                                                                    "categoria":  "cumplimiento",
+                                                                    "probabilidad":  "media",
+                                                                    "impacto":  "medio",
+                                                                    "nivelRiesgo":  "Medio",
+                                                                    "medidasMitigacion":  null,
+                                                                    "responsable":  null,
+                                                                    "estado":  null,
+                                                                    "createdAt":  "2025-12-21T20:36:41.161",
+                                                                    "updatedAt":  "2025-12-21T20:36:41.161",
+                                                                    "deletedAt":  null
+                                                                },
+                                                                {
+                                                                    "id":  "69488500064dadf9fe0425fa",
+                                                                    "empresaId":  1,
+                                                                    "titulo":  "Riesgo demo",
+                                                                    "descripcion":  "Demo",
+                                                                    "categoria":  "cumplimiento",
+                                                                    "probabilidad":  "media",
+                                                                    "impacto":  "medio",
+                                                                    "nivelRiesgo":  "Medio",
+                                                                    "medidasMitigacion":  null,
+                                                                    "responsable":  null,
+                                                                    "estado":  null,
+                                                                    "createdAt":  "2025-12-21T20:38:40.207",
+                                                                    "updatedAt":  "2025-12-21T20:38:40.207",
+                                                                    "deletedAt":  null
+                                                                },
+                                                                {
+                                                                    "id":  "6948a5602bae116a7809d7b2",
+                                                                    "empresaId":  1,
+                                                                    "titulo":  "Riesgo demo",
+                                                                    "descripcion":  "Demo",
+                                                                    "categoria":  "cumplimiento",
+                                                                    "probabilidad":  "media",
+                                                                    "impacto":  "medio",
+                                                                    "nivelRiesgo":  "Medio",
+                                                                    "medidasMitigacion":  null,
+                                                                    "responsable":  null,
+                                                                    "estado":  null,
+                                                                    "createdAt":  "2025-12-21T22:56:48.026",
+                                                                    "updatedAt":  "2025-12-21T22:56:48.026",
+                                                                    "deletedAt":  null
+                                                                },
+                                                                {
+                                                                    "id":  "6948a8682bae116a7809d7b5",
+                                                                    "empresaId":  1,
+                                                                    "titulo":  "Riesgo demo",
+                                                                    "descripcion":  "Demo",
+                                                                    "categoria":  "cumplimiento",
+                                                                    "probabilidad":  "media",
+                                                                    "impacto":  "medio",
+                                                                    "nivelRiesgo":  "Medio",
+                                                                    "medidasMitigacion":  null,
+                                                                    "responsable":  null,
+                                                                    "estado":  null,
+                                                                    "createdAt":  "2025-12-21T23:09:44.751",
+                                                                    "updatedAt":  "2025-12-21T23:09:44.751",
+                                                                    "deletedAt":  null
+                                                                },
+                                                                {
+                                                                    "id":  "6948b05d2bae116a7809d7b8",
+                                                                    "empresaId":  1,
+                                                                    "titulo":  "Riesgo demo",
+                                                                    "descripcion":  "Demo",
+                                                                    "categoria":  "cumplimiento",
+                                                                    "probabilidad":  "media",
+                                                                    "impacto":  "medio",
+                                                                    "nivelRiesgo":  "Medio",
+                                                                    "medidasMitigacion":  null,
+                                                                    "responsable":  null,
+                                                                    "estado":  null,
+                                                                    "createdAt":  "2025-12-21T23:43:41.433",
+                                                                    "updatedAt":  "2025-12-21T23:43:41.433",
+                                                                    "deletedAt":  null
+                                                                },
+                                                                {
+                                                                    "id":  "6948b3cd2bae116a7809d7bc",
+                                                                    "empresaId":  1,
+                                                                    "titulo":  "Riesgo demo",
+                                                                    "descripcion":  "Demo",
+                                                                    "categoria":  "cumplimiento",
+                                                                    "probabilidad":  "media",
+                                                                    "impacto":  "medio",
+                                                                    "nivelRiesgo":  "Medio",
+                                                                    "medidasMitigacion":  null,
+                                                                    "responsable":  null,
+                                                                    "estado":  null,
+                                                                    "createdAt":  "2025-12-21T23:58:21.099",
+                                                                    "updatedAt":  "2025-12-21T23:58:21.099",
+                                                                    "deletedAt":  null
+                                                                }
+                                                            ],
+                                                  "Count":  13
+                                              },
+                                     "status":  200
+                                 },
+                        "path":  "/api/riesgos",
+                        "name":  "Listar Riesgos",
+                        "status":  200
+                    },
+                    {
+                        "resp":  {
+                                     "body":  {
+                                                  "id":  "6948ba292bae116a7809d7bf",
+                                                  "empresaId":  1,
+                                                  "titulo":  "Riesgo demo",
+                                                  "descripcion":  "Demo",
+                                                  "categoria":  "cumplimiento",
+                                                  "probabilidad":  "media",
+                                                  "impacto":  "medio",
+                                                  "nivelRiesgo":  "Medio",
+                                                  "medidasMitigacion":  null,
+                                                  "responsable":  null,
+                                                  "estado":  null,
+                                                  "createdAt":  "2025-12-22T00:25:29.5189999",
+                                                  "updatedAt":  "2025-12-22T00:25:29.5189999",
+                                                  "deletedAt":  null
+                                              },
+                                     "status":  200
+                                 },
+                        "path":  "/api/riesgos",
+                        "name":  "Crear Riesgo",
+                        "status":  200
+                    },
+                    {
+                        "resp":  {
+                                     "body":  {
+                                                  "value":  [
+                                                                {
+                                                                    "id":  "691bf16ebc084de663b71891",
+                                                                    "nombre":  "Ley de protecciÃ³n de datos",
+                                                                    "contenido":  "Regula el tratamiento de datos personales",
+                                                                    "urlDocumento":  "http://gov/regla1.pdf",
+                                                                    "entidadEmisora":  "Superintendencia",
+                                                                    "anioEmision":  2018
+                                                                },
+                                                                {
+                                                                    "id":  "691bf16fbc084de663b71892",
+                                                                    "nombre":  "Norma de AuditorÃ­a Interna",
+                                                                    "contenido":  "Estandares de AuditorÃ­a Interna",
+                                                                    "urlDocumento":  "http://gov/norma-aud.pdf",
+                                                                    "entidadEmisora":  "Ministerio de comercio",
+                                                                    "anioEmision":  2020
+                                                                }
+                                                            ],
+                                                  "Count":  2
+                                              },
+                                     "status":  200
+                                 },
+                        "path":  "/api/regulaciones/",
+                        "name":  "Listar Regulaciones",
+                        "status":  200
+                    },
+                    {
+                        "resp":  {
+                                     "body":  {
+                                                  "value":  [
+                                                                {
+                                                                    "id":  "691bf16fbc084de663b71897",
+                                                                    "empresaId":  1,
+                                                                    "usuarioId":  1,
+                                                                    "pregunta":  "Â¿Como mejorar la gestiÃ³n de riesgos?",
+                                                                    "respuesta":  "Sugerencia: Implementar matriz de riesgos y revisiones trimestrales."
+                                                                }
+                                                            ],
+                                                  "Count":  1
+                                              },
+                                     "status":  200
+                                 },
+                        "path":  "/api/ollama",
+                        "name":  "Listar OllamaResponses",
+                        "status":  200
+                    },
+                    {
+                        "resp":  {
+                                     "body":  {
+                                                  "value":  [
+                                                                {
+                                                                    "id":  "691bf16fbc084de663b71896",
+                                                                    "empresaId":  1,
+                                                                    "tipo":  "Interno",
+                                                                    "objetivo":  "RevisiÃ³n anual de controles",
+                                                                    "alcance":  "Toda la organizaciÃ³n",
+                                                                    "auditorLider":  1,
+                                                                    "fecha":  "2025-11-18T01:09:19.771",
+                                                                    "score":  88.5,
+                                                                    "hallazgosCriticosMsj":  [
+                                                                                                 "Falla control X"
+                                                                                             ],
+                                                                    "hallazgosMayoresMsj":  [
+                                                                                                "Mejorar registro Y"
+                                                                                            ],
+                                                                    "hallazgosMenoresMsj":  [
+                                                                                                "Actualizar control Z"
+                                                                                            ],
+                                                                    "recomendaciones":  "Reforzar controles y capacitaciones"
+                                                                }
+                                                            ],
+                                                  "Count":  1
+                                              },
+                                     "status":  200
+                                 },
+                        "path":  "/api/auditorias",
+                        "name":  "Listar Auditorias",
+                        "status":  200
+                    }
+                ]
+}

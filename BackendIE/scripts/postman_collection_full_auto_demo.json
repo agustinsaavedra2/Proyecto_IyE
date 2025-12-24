@@ -1,0 +1,148 @@
+{
+  "info": {
+    "name": "BackendIE - Full Demo Collection (auto)",
+    "_postman_id": "b2f9c7d8-ffff-4a1a-9f3c-aaaaaaaaaaaa",
+    "description": "Colección con scripts automáticos para guardar variables de entorno (token, ids, randInt) y flujo demo: registro/login -> empresas -> riesgos -> ML.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 - Auth - Register Admin (opcional)",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": { "mode": "raw", "raw": "{\"nombre\": \"Admin Demo {{randInt}}\", \"email\": \"admin.demo+{{randInt}}@example.com\", \"password\": \"adminpass123\" }" },
+        "url": { "raw": "{{baseUrl}}/api/usuarios/registerAdmin", "host": [ "{{baseUrl}}" ], "path": [ "api", "usuarios", "registerAdmin" ] }
+      },
+      "event": [
+        { "listen": "prerequest", "script": { "exec": [ "if (!pm.environment.get('randInt')) { pm.environment.set('randInt', Math.floor(Math.random()*100000).toString()); }" ] } },
+        { "listen": "test", "script": { "exec": [ "var j={}; try{ j=pm.response.json(); }catch(e){}; if(j && (j.id||j._id)) pm.environment.set('adminId', j.id||j._id); pm.test('registerAdmin: status', function(){ pm.expect(pm.response.code).to.be.oneOf([200,201,400]); });" ] } }
+      ]
+    },
+
+    {
+      "name": "02 - Auth - Login (obtener token)",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "body": { "mode": "raw", "raw": "{\"email\": \"{{LOGIN_EMAIL}}\", \"password\": \"{{LOGIN_PASSWORD}}\" }" },
+        "url": { "raw": "{{baseUrl}}/api/usuarios/login", "host": [ "{{baseUrl}}" ], "path": [ "api", "usuarios", "login" ] }
+      },
+      "event": [ { "listen": "test", "script": { "exec": [ "var j={}; try{ j=pm.response.json(); }catch(e){}; if(j && j.token) pm.environment.set('token', j.token); if(j && j.refreshToken) pm.environment.set('refreshToken', j.refreshToken); pm.test('login: token present', function(){ pm.expect(j.token).to.exist; });" ] } } ]
+    },
+
+    {
+      "name": "03 - Empresas - Crear Categoria",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "body": { "mode": "raw", "raw": "{\"nombre\": \"DemoCategoria\", \"descripcion\": \"Categoria demo para pruebas\" }" },
+        "url": { "raw": "{{baseUrl}}/api/categorias/crear", "host": [ "{{baseUrl}}" ], "path": [ "api", "categorias", "crear" ] }
+      },
+      "event": [ { "listen": "test", "script": { "exec": [ "var j={}; try{ j=pm.response.json(); }catch(e){}; if(j && (j.id||j._id)) pm.environment.set('categoriaId', j.id||j._id); pm.test('categoria: ok', function(){ pm.expect(pm.response.code).to.be.oneOf([200,201]); });" ] } } ]
+    },
+
+    {
+      "name": "04 - Empresas - Crear Empresa",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "body": { "mode": "raw", "raw": "{\"admin\": {{adminId}}, \"categoriaId\": {{categoriaId}}, \"nombre\": \"Demo S.A.\", \"codigoEmpresa\": \"DEMO-PS-{{randInt}}\", \"ubicacion\": \"Santiago\", \"descripcion\": \"Empresa demo creada por la colección\" }" },
+        "url": { "raw": "{{baseUrl}}/api/empresas/registrar", "host": [ "{{baseUrl}}" ], "path": [ "api", "empresas", "registrar" ] }
+      },
+      "event": [
+        { "listen": "prerequest", "script": { "exec": [ "if (!pm.environment.get('randInt')) { pm.environment.set('randInt', Math.floor(Math.random()*100000).toString()); }" ] } },
+        { "listen": "test", "script": { "exec": [ "var j={}; try{ j=pm.response.json(); }catch(e){}; if(j && (j.id||j._id)) pm.environment.set('empresaId', j.id||j._id); if(j && j.admin) pm.environment.set('adminId', j.admin); pm.test('empresa: ok', function(){ pm.expect(pm.response.code).to.be.oneOf([200,201]); });" ] } }
+      ]
+    },
+
+    {
+      "name": "05 - Usuarios - Register User",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "body": { "mode": "raw", "raw": "{\"empresaId\": {{empresaId}}, \"nombre\": \"Usuario Demo\", \"email\": \"user+{{randInt}}@example.com\", \"password\": \"password123\", \"rol\": \"complianceofficer\", \"adminId\": {{adminId}} }" },
+        "url": { "raw": "{{baseUrl}}/api/usuarios/registerUser", "host": [ "{{baseUrl}}" ], "path": [ "api", "usuarios", "registerUser" ] }
+      },
+      "event": [ { "listen": "prerequest", "script": { "exec": [ "if (!pm.environment.get('randInt')) { pm.environment.set('randInt', Math.floor(Math.random()*100000).toString()); }" ] } }, { "listen": "test", "script": { "exec": [ "var j={}; try{ j=pm.response.json(); }catch(e){}; if(j && (j.id||j._id)) pm.environment.set('usuarioId', j.id||j._id); pm.test('registerUser: ok', function(){ pm.expect(pm.response.code).to.be.oneOf([200,201,400]); });" ] } } ]
+    },
+
+    {
+      "name": "06 - Riesgos - Crear Riesgo",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "body": { "mode": "raw", "raw": "{\"empresaId\": {{empresaId}}, \"titulo\": \"Riesgo demo flujo\", \"descripcion\": \"Prueba flujo crear\", \"categoria\": \"cumplimiento\", \"probabilidad\": \"alta\", \"impacto\": \"alto\", \"nivelRiesgo\": \"alto\" }" },
+        "url": { "raw": "{{baseUrl}}/api/riesgos", "host": [ "{{baseUrl}}" ], "path": [ "api", "riesgos" ] }
+      },
+      "event": [ { "listen": "test", "script": { "exec": [ "var j={}; try{ j=pm.response.json(); }catch(e){}; if(j && (j.id||j._id)) pm.environment.set('riesgoId', j.id||j._id); pm.test('riesgo: ok', function(){ pm.expect(pm.response.code).to.be.oneOf([200,201]); });" ] } } ]
+    },
+
+    {
+      "name": "07 - Riesgos - Listar Riesgos",
+      "request": {
+        "method": "GET",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "url": { "raw": "{{baseUrl}}/api/riesgos?page=0&size=5&empresaId={{empresaId}}", "host": [ "{{baseUrl}}" ], "path": [ "api", "riesgos" ], "query": [ { "key": "page", "value": "0" }, { "key": "size", "value": "5" }, { "key": "empresaId", "value": "{{empresaId}}" } ] }
+      }
+    },
+
+    {
+      "name": "08 - ML - Upload document",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "file", "type": "file", "src": "C:\\Users\\Duvan\\Desktop\\Innovacion y emprendimiento\\Pruebas_PEP_1_Postman\\Listado_de_empresas_multadas_por_infracciones_relacionadas_al_trabajo_de_niños_niñas_y_adolescentes_NNA_Segundo_semestre_2024.pdf" },
+            { "key": "empresaId", "type": "text", "value": "{{empresaId}}" }
+          ]
+        },
+        "url": { "raw": "{{baseUrl}}/api/ml/upload", "host": [ "{{baseUrl}}" ], "path": [ "api", "ml", "upload" ] }
+      }
+    },
+
+    {
+      "name": "09 - ML - Start training job (async)",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "url": { "raw": "{{baseUrl}}/api/ml/train?empresaId={{empresaId}}", "host": [ "{{baseUrl}}" ], "path": [ "api", "ml", "train" ], "query": [ { "key": "empresaId", "value": "{{empresaId}}" } ] }
+      }
+    },
+
+    {
+      "name": "10 - ML - Predict",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "body": { "mode": "raw", "raw": "{\"text\": \"El establecimiento no registra control de temperatura en cadena de frío y ha sido sancionado antes\", \"empresaId\": {{empresaId}}, \"usuarioId\": {{usuarioId}} }" },
+        "url": { "raw": "{{baseUrl}}/api/ml/predict", "host": [ "{{baseUrl}}" ], "path": [ "api", "ml", "predict" ] }
+      },
+      "event": [ { "listen": "test", "script": { "exec": [ "var j={}; try{ j=pm.response.json(); }catch(e){}; if(j && j.riesgoId) pm.environment.set('riesgoId', j.riesgoId); pm.test('predict: ok', function(){ pm.expect(pm.response.code).to.be.oneOf([200]); });" ] } } ]
+    },
+
+    {
+      "name": "11 - ML - NER",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "body": { "mode": "raw", "raw": "{\"text\": \"Inspección detectó incumplimiento en higiene y sanción administrativa\" }" },
+        "url": { "raw": "{{baseUrl}}/api/ml/ner", "host": [ "{{baseUrl}}" ], "path": [ "api", "ml", "ner" ] }
+      }
+    },
+
+    {
+      "name": "12 - ML - Classify",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "body": { "mode": "raw", "raw": "{\"empresaId\": {{empresaId}}, \"usuarioId\": {{usuarioId}}, \"idsDePoliticas\": [] }" },
+        "url": { "raw": "{{baseUrl}}/api/ml/classify", "host": [ "{{baseUrl}}" ], "path": [ "api", "ml", "classify" ] }
+      }
+    }
+
+  ],
+  "variable": [ { "key": "baseUrl", "value": "http://localhost:8080" }, { "key": "LOGIN_EMAIL", "value": "maria.lopez@bancocontinental.com" }, { "key": "LOGIN_PASSWORD", "value": "password123" }, { "key": "randInt", "value": "42" } ]
+}

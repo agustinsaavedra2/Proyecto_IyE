@@ -39,13 +39,16 @@ public class Usuario {
     private LocalDateTime ultimoAcceso;
 
     @Column(updatable = false)
+    @Builder.Default
     private LocalDateTime createDat = LocalDateTime.now();
 
+    @Builder.Default
     private LocalDateTime updateDat = LocalDateTime.now();
 
     private LocalDateTime deleteDat; // Soft delete
 
     // New: token version for immediate JWT invalidation (increment to invalidate existing tokens)
     @Column(name = "token_version", nullable = false)
+    @Builder.Default
     private Integer tokenVersion = 0;
 }

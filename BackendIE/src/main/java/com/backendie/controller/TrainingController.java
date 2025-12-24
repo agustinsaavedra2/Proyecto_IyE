@@ -15,7 +15,7 @@ import java.util.Map;
 public class TrainingController {
 
     @PostMapping("/start")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('admin')")
     public ResponseEntity<?> startTraining(@RequestParam(value="labelMethod", defaultValue="none") String labelMethod,
                                            @RequestParam(value="model", defaultValue="logreg") String model) {
         try {

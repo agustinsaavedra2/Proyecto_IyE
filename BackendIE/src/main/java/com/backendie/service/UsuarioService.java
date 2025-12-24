@@ -50,6 +50,7 @@ public class UsuarioService {
             .email(email)
             .passwordHash(hashed)
             .rol(ADMIN_ROLE)
+            .tokenVersion(0)
             .build();
         return usuarioRepository.save(usuario);
     }
@@ -101,6 +102,7 @@ public class UsuarioService {
                 .email(email)
                 .passwordHash(hashed)
                 .rol(rol)
+                .tokenVersion(0)
                 .build();
         usuarioRepository.save(usuario);
         empresa.getEmpleados().add(usuario.getId());
@@ -121,6 +123,7 @@ public class UsuarioService {
         usuario.setPasswordHash(passwordEncoder.encode(password));
         usuario.setRol(ADMIN_ROLE);
         usuario.setActivo(false);
+        usuario.setTokenVersion(0);
         usuarioRepository.save(usuario);
         String token = tokenService.generateEmailVerificationToken(usuario.getId());
         log.info("Se genero el token: {}", token);
@@ -143,6 +146,7 @@ public class UsuarioService {
                 .email(email)
                 .passwordHash(passwordEncoder.encode(password))
                 .activo(false)
+                .tokenVersion(0)
                 .build();
         usuarioRepository.save(usuario);
         String token = tokenService.generateEmailVerificationToken(usuario.getId());

@@ -131,24 +131,43 @@ public class OllamaResponseService {
     // New method: classify risk using Ollama LLM
     public Map<String, Object> classifyRisk(Long empresaId, Long usuarioId, List<String> idsDePoliticasAEvaluar) {
         // build context
-        Empresa empresa = empresaRepository.findById(empresaId).orElseThrow(() -> new IllegalArgumentException("Empresa no encontrada."));
-        List<PoliticaEmpresa> politicas = politicaEmpresaRepository.findAllById(idsDePoliticasAEvaluar);
+        // No necesitamos la variable empresa en este método, sólo validar existencia
+        empresaRepository.findById(empresaId).orElseThrow(() -> new IllegalArgumentException("Empresa no encontrada."));
+
+        // Normalizar ids a String y buscar políticas
+        List<String> idsStr = idsDePoliticasAEvaluar == null ? List.of() : idsDePoliticasAEvaluar.stream().map(Object::toString).toList();
+        List<PoliticaEmpresa> politicas = idsStr.isEmpty() ? List.of() : politicaEmpresaRepository.findAllById(idsStr);
+
+        boolean usedFallback = false;
+        if (politicas == null || politicas.isEmpty()) {
+            // Fallback: cargar todas las políticas de la empresa
+            politicas = politicaEmpresaRepository.findPoliticaEmpresaByEmpresaId(empresaId);
+            usedFallback = politicas != null && !politicas.isEmpty();
+        }
+
         StringBuilder contexto = new StringBuilder();
-        for (PoliticaEmpresa p : politicas) {
-            contexto.append("\n\n--- ").append(p.getTitulo()).append(" ---\n").append(p.getContenido());
+        if (politicas != null) {
+            for (PoliticaEmpresa p : politicas) {
+                contexto.append("\n\n--- ").append(p.getTitulo()).append(" ---\n").append(p.getContenido());
+            }
         }
 
         // Try to get a model-based prediction to include as additional context
         String modelHint = "";
         try {
-            Map<String,Object> modelOut = mlModelService.predict(contexto.toString());
-            if (modelOut != null) {
-                Object lbl = modelOut.getOrDefault("label", modelOut.getOrDefault("risk", null));
-                Object conf = modelOut.getOrDefault("confidence", modelOut.getOrDefault("probabilities", null));
-                if (lbl != null) {
-                    modelHint = "Modelo_sugiere_riesgo: " + lbl.toString();
-                    if (conf instanceof Number) modelHint += " (conf: " + conf.toString() + ")";
-                    else if (conf instanceof List) modelHint += " (probabilidades incluidas)";
+            // Evitar llamar al modelo ML si no hay contexto textual
+            if (contexto.toString().isBlank()) {
+                // no context to predict from, skip model enrichment
+            } else {
+                Map<String,Object> modelOut = mlModelService.predict(contexto.toString());
+                if (modelOut != null) {
+                    Object lbl = modelOut.getOrDefault("label", modelOut.getOrDefault("risk", null));
+                    Object conf = modelOut.getOrDefault("confidence", modelOut.getOrDefault("probabilities", null));
+                    if (lbl != null) {
+                        modelHint = "Modelo_sugiere_riesgo: " + lbl;
+                        if (conf instanceof Number) modelHint += " (conf: " + conf + ")";
+                        else if (conf instanceof List) modelHint += " (probabilidades incluidas)";
+                    }
                 }
             }
         } catch (Exception e) {
@@ -195,6 +214,7 @@ public class OllamaResponseService {
         out.put("explanation", explanation);
         out.put("riesgoId", r.getId());
         out.put("raw", respuesta);
+        out.put("usedFallback", usedFallback);
         return out;
     }
 
@@ -277,8 +297,25 @@ public class OllamaResponseService {
     // 2. Contexto
     StringBuilder documentacionCompleta = new StringBuilder();
 
-    // 🔹 Ahora ya son String, no hay que convertir
-    List<PoliticaEmpresa> politicas = politicaEmpresaRepository.findAllById(idsDePoliticasAEvaluar);
+    // Aceptar que el input pueda contener números o strings: normalizamos a String
+    List<String> idsPoliticaStr = idsDePoliticasAEvaluar.stream().map(Object::toString).toList();
+
+    List<PoliticaEmpresa> politicas = politicaEmpresaRepository.findAllById(idsPoliticaStr);
+
+    boolean usedFallback = false;
+    // Si no encontramos políticas por ID, intentamos usar todas las políticas de la empresa como fallback
+    if (politicas == null || politicas.isEmpty()) {
+        politicas = politicaEmpresaRepository.findPoliticaEmpresaByEmpresaId(empresaId);
+        usedFallback = politicas != null && !politicas.isEmpty();
+    }
+
+    // identificar IDs encontrados
+    Set<String> foundIds = politicas.stream().map(PoliticaEmpresa::getId).collect(java.util.stream.Collectors.toSet());
+
+    if (politicas == null || politicas.isEmpty()) {
+        // no hay contexto real para evaluar
+        throw new IllegalArgumentException("No se encontró documentación (políticas/procedimientos) para la empresa " + empresaId + ". Proporcione idsDePoliticas válidos o cargue documentación en MongoDB.");
+    }
 
     for (PoliticaEmpresa politica : politicas) {
         documentacionCompleta.append("\n\n--- INICIO POLITICA: ").append(politica.getTitulo())
@@ -309,7 +346,13 @@ public class OllamaResponseService {
     }
 
     if (documentacionCompleta.isEmpty()) {
-        throw new IllegalArgumentException("No se encontró documentación (políticas, protocolos o procedimientos) para los IDs proporcionados.");
+        // Mejor mensaje: indicar qué políticas fueron encontradas y cuáles no
+        java.util.List<String> requested = idsPoliticaStr;
+        java.util.List<String> present = new java.util.ArrayList<>(foundIds);
+        java.util.List<String> missing = new java.util.ArrayList<>();
+        for (String id : requested) if (!foundIds.contains(id)) missing.add(id);
+
+        throw new IllegalArgumentException("No se encontró documentación útil para los IDs proporcionados. Requested=" + requested + ", found=" + present + ", missing=" + missing + ". Revise que las políticas incluyan protocolos/procedimientos o que los IDs sean correctos.");
     }
 
     // 3. Prompt

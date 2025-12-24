@@ -1,19 +1,530 @@
-Opci ́on A: Usando Postman
-Preparar una colecci ́on de Postman con todos los endpoints
-Mostrar las requests y responses en tiempo real
-Demostrar el flujo completo de un caso de uso
-Opci ́on B: Tests Automatizados
-Ejecutar suite de tests que muestre la funcionalidad
-Mostrar cobertura de c ́odigo
-Explicar casos de prueba mientras se ejecutan
-Opci ́on C: Script de Demostraci ́on
-Preparar un script (Python, Node.js, etc.) que consuma la API
-Mostrar las operaciones CRUD principales
-Demostrar validaciones y manejo de errores
-Elementos clave a mostrar:
-1. Creaci ́on de entidades principales
-2. Lectura con filtros y paginaci ́on
-3. Actualizaci ́on con validaciones
-4. Eliminaci ́on y manejo de relaciones
-5. L ́ogica de negocio espec ́ıfica del proyecto
-6. Manejo de errores y casos edge
+PS C:\Users\Duvan\Desktop\Innovacion y emprendimiento\Proyecto_para_Pep_1\Proyecto_IyE\BackendIE> powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_demo_phases.ps1 -BaseUrl "http://localhost:8080" -LoginEmail "maria.lopez@bancocontinental.com" -LoginPassword "password123" -NoPause
+Demo en dos fases:
+  BaseUrl: http://localhost:8080
+  LoginEmail: maria.lopez@bancocontinental.com
+Reportes generados en: C:\Users\Duvan\Desktop\Innovacion y emprendimiento\Proyecto_para_Pep_1\Proyecto_IyE\BackendIE\reports\demo_newman_phase1.json y C:\Users\Duvan\Desktop\Innovacion y emprendimiento\Proyecto_para_Pep_1\Proyecto_IyE\BackendIE\reports\demo_newman_phase2.json
+
+=== FASE 1: Ejecutando colecciÃ³n SIN token (fallos esperados) ===
+Ejecutando: C:\Users\Duvan\AppData\Roaming\npm\newman.cmd run "C:\Users\Duvan\Desktop\Innovacion y emprendimiento\Proyecto_para_Pep_1\Proyecto_IyE\BackendIE\scripts\postman_collection_full.json" --env-var "baseUrl=http://localhost:8080" --env-var "riesgoId=1" --env-var "empresaId=1" --reporters cli,json --reporter-json-export "C:\Users\Duvan\Desktop\Innovacion y emprendimiento\Proyecto_para_Pep_1\Proyecto_IyE\BackendIE\reports\demo_newman_phase1.json"
+newman
+
+BackendIE - Full Demo Collection
+
+â†’ 1 - Login (obtener token)
+  POST http://localhost:8080/api/usuarios/login [200 OK, 769B, 113ms]
+  â”Œ
+  â”‚ 'TOKEN SAVED'
+  â”‚ 'Login response status: 200'
+  â”‚ 'Login response body: {"token":"eyJhbGciOiJIUzI1NiJ9.e
+  â”‚ yJzdWIiOiJtYXJpYS5sb3BlekBiYW5jb2NvbnRpbmVudGFsLmNvbSI
+  â”‚ sInRva2VuVmVyc2lvbiI6MCwiaWF0IjoxNzY2MzYwMzA1LCJleHAiO
+  â”‚ jE3NjYzNjM5MDUsInJvbGVzIjpbImFkbWluIl19.VgHVcsRGSNbT3L
+  â”‚ 5VXkf8yZbBomSsKw6MypXO-CB-T0w","refreshToken":"3tO1emQ
+  â”‚ udgWuA3hH3x1lUTwQw4cgxL4YN-ao8rDdpTGoh9xMXK8UGbqUcuyNe
+  â”‚ oWrDqDioCBuhGQi84uZyWzyow","expiresIn":3600}'
+  â””
+  âˆš  Login OK (200)
+
+â†’ 2 - Crear Categoria
+  POST http://localhost:8080/api/categorias/crear [200 OK, 621B, 13ms]
+  â”Œ
+  â”‚ 'Create Categoria status: 200'
+  â”‚ 'Body: {"id":4,"nombre":"DemoCategoria","descripcion":
+  â”‚ "Categoria demo para pruebas","regulaciones":null,"cre
+  â”‚ atedAt":"2025-12-21T20:38:25.2401658","updatedAt":"202
+  â”‚ 5-12-21T20:38:25.2401658","deletedAt":null}'
+  â””
+  âˆš  201/200 or OK
+
+â†’ 3 - Crear Empresa (creacion de entidad principal)
+  â”Œ
+  â”‚ 'randomInt set: 1394'
+  â””
+  POST http://localhost:8080/api/empresas/registrar [200 OK, 713B, 17ms]
+  â”Œ
+  â”‚ 'Create Empresa status: 200'
+  â”‚ 'Body: {"id":7,"categoriaId":4,"nombre":"Demo S.A.","c
+  â”‚ odigoEmpresa":"DEMO-PS-1394","empleados":[1],"ubicacio
+  â”‚ n":"Santiago","descripcion":"Empresa demo creada por l
+  â”‚ a colecciÃ³n","status":"inactive","createdAt":"2025-12-
+  â”‚ 21T20:38:25.3471667","updatedAt":"2025-12-21T20:38:25.
+  â”‚ 3471667","deletedAt":null}'
+  â””
+  âˆš  Create Empresa OK
+
+â†’ 4 - Crear Usuario (relaciÃ³n empresas-usuarios)
+  POST http://localhost:8080/api/usuarios/registerUser [500 Internal Server Error, 539B, 96ms]
+  â”Œ
+  â”‚ 'Create User status: 500'
+  â”‚ 'Body: {"timestamp":"2025-12-21T23:38:25.524+00:00","s
+  â”‚ tatus":500,"error":"Internal Server Error","path":"/ap
+  â”‚ i/usuarios/registerUser"}'
+  â””
+  1. Create User 200/201
+
+â†’ 5 - Crear Riesgo (entidad Mongo)
+  POST http://localhost:8080/api/riesgos [200 OK, 780B, 64ms]
+  â”Œ
+  â”‚ 'Create Riesgo status: 200'
+  â”‚ 'Body: {"id":"694884f1064dadf9fe0425f8","empresaId":7,
+  â”‚ "titulo":"Riesgo demo flujo","descripcion":"Prueba flu
+  â”‚ jo crear","categoria":"cumplimiento","probabilidad":"a
+  â”‚ lta","impacto":"alto","nivelRiesgo":"alto","medidasMit
+  â”‚ igacion":null,"responsable":null,"estado":null,"create
+  â”‚ dAt":"2025-12-21T20:38:25.6821746","updatedAt":"2025-1
+  â”‚ 2-21T20:38:25.6821746","deletedAt":null}'
+  â””
+  âˆš  Create Riesgo 200
+
+â†’ 6 - Listar Riesgos (filtros y paginaciÃ³n)
+  GET http://localhost:8080/api/riesgos?page=0&size=5&empresaId=7 [200 OK, 3.64kB, 16ms]
+  â”Œ
+  â”‚ 'List Riesgos status: 200'
+  â”‚ 'Body: [{"id":"691bf170bc084de663b71898","empresaId":1
+  â”‚ ,"titulo":"Riesgo de fuga de datos","descripcion":"Pos
+  â”‚ ible fuga por accesos no autorizados.","categoria":"cu
+  â”‚ mplimiento","probabilidad":"alta","impacto":"alto","ni
+  â”‚ velRiesgo":"alto","medidasMitigacion":"Implementar DLP
+  â”‚  y Capacitar empleados","responsable":1,"estado":"abie
+  â”‚ rto","createdAt":"2025-12-21T20:38:25.8431702","update
+  â”‚ dAt":"2025-12-21T20:38:25.8431702","deletedAt":null},{
+  â”‚ "id":"69486c90064dadf9fe0425f1","empresaId":1,"titulo"
+  â”‚ :"Riesgo demo","descripcion":"Demo de riesgo para la p
+  â”‚ resentaciÃ³n","categoria":"compliance","probabilidad":"
+  â”‚ media","impacto":"medio","nivelRiesgo":"Medio","medida
+  â”‚ sMitigacion":null,"responsable":null,"estado":null,"cr
+  â”‚ eatedAt":"2025-12-21T18:54:24.113","updatedAt":"2025-1
+  â”‚ 2-21T18:54:24.113","deletedAt":null},{"id":"69486ea206
+  â”‚ 4dadf9fe0425f2","empresaId":1,"titulo":"Riesgo demo","
+  â”‚ descripcion":"Demo de riesgo para la presentaciÃ³n","ca
+  â”‚ tegoria":"compliance","probabilidad":"media","impacto"
+  â”‚ :"medio","nivelRiesgo":"Medio","medidasMitigacion":nul
+  â”‚ l,"responsable":null,"estado":null,"createdAt":"2025-1
+  â”‚ 2-21T19:03:14.174","updatedAt":"2025-12-21T19:03:14.17
+  â”‚ 4","deletedAt":null},{"id":"69486eae064dadf9fe0425f3",
+  â”‚ "empresaId":1,"titulo":"Riesgo demo","descripcion":"De
+  â”‚ mo","categoria":"compliance","probabilidad":"media","i
+  â”‚ mpacto":"medio","nivelRiesgo":"Medio","medidasMitigaci
+  â”‚ on":null,"responsable":null,"estado":null,"createdAt":
+  â”‚ "2025-12-21T19:03:26.296","updatedAt":"2025-12-21T19:0
+  â”‚ 3:26.296","deletedAt":null},{"id":"6948708c064dadf9fe0
+  â”‚ 425f4","empresaId":1,"titulo":"Riesgo demo","descripci
+  â”‚ on":"Demo de riesgo para la presentaciÃ³n","categoria":
+  â”‚ "compliance","probabilidad":"media","impacto":"medio",
+  â”‚ "nivelRiesgo":"Medio","medidasMitigacion":null,"respon
+  â”‚ sable":null,"estado":null,"createdAt":"2025-12-21T19:1
+  â”‚ 1:24.512","updatedAt":"2025-12-21T19:11:24.512","delet
+  â”‚ edAt":null},{"id":"6948713d064dadf9fe0425f5","empresaI
+  â”‚ d":1,"titulo":"Riesgo demo","descripcion":"Demo de rie
+  â”‚ sgo para la presentaciÃ³n","categoria":"compliance","pr
+  â”‚ obabilidad":"media","impacto":"medio","nivelRiesgo":"M
+  â”‚ edio","medidasMitigacion":null,"responsable":null,"est
+  â”‚ ado":null,"createdAt":"2025-12-21T19:14:21.22","update
+  â”‚ dAt":"2025-12-21T19:14:21.22","deletedAt":null},{"id":
+  â”‚ "69487149064dadf9fe0425f6","empresaId":1,"titulo":"Rie
+  â”‚ sgo demo","descripcion":"Demo","categoria":"cumplimien
+  â”‚ to","probabilidad":"media","impacto":"medio","nivelRie
+  â”‚ sgo":"Medio","medidasMitigacion":null,"responsable":nu
+  â”‚ ll,"estado":null,"createdAt":"2025-12-21T19:14:33.866"
+  â”‚ ,"updatedAt":"2025-12-21T19:14:33.866","deletedAt":nul
+  â”‚ l},{"id":"69488489064dadf9fe0425f7","empresaId":1,"tit
+  â”‚ ulo":"Riesgo demo","descripcion":"Demo","categoria":"c
+  â”‚ umplimiento","probabilidad":"media","impacto":"medio",
+  â”‚ "nivelRiesgo":"Medio","medidasMitigacion":null,"respon
+  â”‚ sable":null,"estado":null,"createdAt":"2025-12-21T20:3
+  â”‚ 6:41.161","updatedAt":"2025-12-21T20:36:41.161","delet
+  â”‚ edAt":null},{"id":"694884f1064dadf9fe0425f8","empresaI
+  â”‚ d":7,"titulo":"Riesgo demo flujo","descripcion":"Prueb
+  â”‚ a flujo crear","categoria":"cumplimiento","probabilida
+  â”‚ d":"alta","impacto":"alto","nivelRiesgo":"alto","medid
+  â”‚ asMitigacion":null,"responsable":null,"estado":null,"c
+  â”‚ reatedAt":"2025-12-21T20:38:25.682","updatedAt":"2025-
+  â”‚ 12-21T20:38:25.682","deletedAt":null}]'
+  â””
+  âˆš  List OK
+
+â†’ 7 - Update Riesgo (validaciÃ³n negativa)
+  PUT http://localhost:8080/api/riesgos/694884f1064dadf9fe0425f8 [200 OK, 734B, 19ms]
+  â”Œ
+  â”‚ 'Update invalid Riesgo status: 200'
+  â”‚ 'Body: {"id":"694884f1064dadf9fe0425f8","empresaId":nu
+  â”‚ ll,"titulo":null,"descripcion":null,"categoria":null,"
+  â”‚ probabilidad":null,"impacto":null,"nivelRiesgo":"","me
+  â”‚ didasMitigacion":null,"responsable":null,"estado":null
+  â”‚ ,"createdAt":"2025-12-21T20:38:25.9311672","updatedAt"
+  â”‚ :"2025-12-21T20:38:25.9311672","deletedAt":null}'
+  â””
+  2. Update should fail
+
+â†’ 8 - Update Riesgo (vÃ¡lido)
+  PUT http://localhost:8080/api/riesgos/694884f1064dadf9fe0425f8 [200 OK, 739B, 13ms]
+  â”Œ
+  â”‚ 'Update Riesgo status: 200'
+  â”‚ 'Body: {"id":"694884f1064dadf9fe0425f8","empresaId":nu
+  â”‚ ll,"titulo":null,"descripcion":null,"categoria":null,"
+  â”‚ probabilidad":null,"impacto":null,"nivelRiesgo":"medio
+  â”‚ ","medidasMitigacion":null,"responsable":null,"estado"
+  â”‚ :null,"createdAt":"2025-12-21T20:38:26.0441667","updat
+  â”‚ edAt":"2025-12-21T20:38:26.0441667","deletedAt":null}'
+  â””
+  âˆš  Update OK
+
+â†’ 9 - Get Riesgo by Id (relaciÃ³n)
+  GET http://localhost:8080/api/riesgos/694884f1064dadf9fe0425f8 [200 OK, 731B, 12ms]
+  â”Œ
+  â”‚ 'Get Riesgo status: 200'
+  â”‚ 'Body: {"id":"694884f1064dadf9fe0425f8","empresaId":nu
+  â”‚ ll,"titulo":null,"descripcion":null,"categoria":null,"
+  â”‚ probabilidad":null,"impacto":null,"nivelRiesgo":"medio
+  â”‚ ","medidasMitigacion":null,"responsable":null,"estado"
+  â”‚ :null,"createdAt":"2025-12-21T20:38:26.044","updatedAt
+  â”‚ ":"2025-12-21T20:38:26.044","deletedAt":null}'
+  â””
+  âˆš  Get Riesgo OK
+
+â†’ 10 - Delete Riesgo (eliminaciÃ³n y manejo relaciones)
+  DELETE http://localhost:8080/api/riesgos/694884f1064dadf9fe0425f8 [204 No Content, 371B, 18ms]
+  â”Œ
+  â”‚ 'Delete Riesgo status: 204'
+  â”‚ 'Body: '
+  â””
+  âˆš  Delete OK or NoContent
+
+â†’ 11 - Crear Politica (lÃ³gica de negocio ejemplo)
+  POST http://localhost:8080/api/ollama/politica/crear [400 Bad Request, 461B, 12ms]
+  â”Œ
+  â”‚ 'Crear Politica status: 400'
+  â”‚ 'Body: Error al crear la polÃ­tica: La empresa debe est
+  â”‚ ar activa.'
+  â””
+  âˆš  Crear Politica OK or 200
+
+â†’ 12 - Generar Documento LLM (ejemplo)
+  POST http://localhost:8080/api/llm/generateDocument [404 Not Found, 543B, 17ms]
+  â”Œ
+  â”‚ 'GenerateDoc status: 404'
+  â”‚ 'Body: {"timestamp":"2025-12-21T23:38:26.397+00:00","s
+  â”‚ tatus":404,"error":"Not Found","path":"/api/llm/genera
+  â”‚ teDocument"}'
+  â””
+  âˆš  GenerateDoc OK or 404 if not implemented
+
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” 
+â”‚                         â”‚          executed â”‚            failed â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚              iterations â”‚                 1 â”‚                 0 â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚                requests â”‚                12 â”‚                 0 â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚            test-scripts â”‚                12 â”‚                 0 â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚      prerequest-scripts â”‚                 1 â”‚                 0 â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚              assertions â”‚                12 â”‚                 2 â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚ total run duration: 1491ms                                      â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚ total data received: 5.64kB (approx)                            â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚ average response time: 34ms [min: 12ms, max: 113ms, s.d.: 34ms] â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+
+  #  failure         detail
+
+ 1.  AssertionError  Create User 200/201
+                     expected 500 to be one of [ 200, 201 ]
+                     at assertion:0 in test-script
+                     inside "4 - Crear Usuario (relaciÃ³n empresas-usuarios)"
+
+ 2.  AssertionError  Update should fail
+                     expected 200 to be one of [ 400, 404, 422 ]
+                     at assertion:0 in test-script
+                     inside "7 - Update Riesgo (validaciÃ³n negativa)"
+
+Fase 1 ExitCode: 1
+
+=== FASE 2: Obteniendo token y ejecutando colecciÃ³n CON token (Ã©xitos esperados) ===
+Login: POST http://localhost:8080/api/usuarios/login
+Token obtenido: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiO...
+Admin encontrado: 3
+Ejecutando: C:\Users\Duvan\AppData\Roaming\npm\newman.cmd run "C:\Users\Duvan\Desktop\Innovacion y emprendimiento\Proyecto_para_Pep_1\Proyecto_IyE\BackendIE\scripts\postman_collection_full.json" --env-var "baseUrl=http://localhost:8080" --env-var "riesgoId=1" --env-var "token=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtYXJpYS5sb3BlekBiYW5jb2NvbnRpbmVudGFsLmNvbSIsInRva2VuVmVyc2lvbiI6MCwiaWF0IjoxNzY2MzYwMzA2LCJleHAiOjE3NjYzNjM5MDYsInJvbGVzIjpbImFkbWluIl19.70gZgxoKfnh1zlSYu051WclD7dMCQv19gIDr33mOMDs" --env-var "empresaId=1" --reporters cli,json --reporter-json-export "C:\Users\Duvan\Desktop\Innovacion y emprendimiento\Proyecto_para_Pep_1\Proyecto_IyE\BackendIE\reports\demo_newman_phase2.json"
+newman
+
+BackendIE - Full Demo Collection
+
+â†’ 1 - Login (obtener token)
+  POST http://localhost:8080/api/usuarios/login [200 OK, 769B, 107ms]
+  â”Œ
+  â”‚ 'TOKEN SAVED'
+  â”‚ 'Login response status: 200'
+  â”‚ 'Login response body: {"token":"eyJhbGciOiJIUzI1NiJ9.e
+  â”‚ yJzdWIiOiJtYXJpYS5sb3BlekBiYW5jb2NvbnRpbmVudGFsLmNvbSI
+  â”‚ sInRva2VuVmVyc2lvbiI6MCwiaWF0IjoxNzY2MzYwMzA4LCJleHAiO
+  â”‚ jE3NjYzNjM5MDgsInJvbGVzIjpbImFkbWluIl19.1ptc2bqg5-K9DZ
+  â”‚ yVtWcNz5A2sR9b0YpHookrM6q5zlk","refreshToken":"rSZ7blD
+  â”‚ A3inGLDV1A1Dob_9VYRzEYae27G0dlb_dclck_q8sz_UNT7JrzNe0i
+  â”‚ 9q_ff3Zjsokn-WgBTQ9cZuLuA","expiresIn":3600}'
+  â””
+  âˆš  Login OK (200)
+
+â†’ 2 - Crear Categoria
+  POST http://localhost:8080/api/categorias/crear [200 OK, 621B, 10ms]
+  â”Œ
+  â”‚ 'Create Categoria status: 200'
+  â”‚ 'Body: {"id":5,"nombre":"DemoCategoria","descripcion":
+  â”‚ "Categoria demo para pruebas","regulaciones":null,"cre
+  â”‚ atedAt":"2025-12-21T20:38:28.4897743","updatedAt":"202
+  â”‚ 5-12-21T20:38:28.4897743","deletedAt":null}'
+  â””
+  âˆš  201/200 or OK
+
+â†’ 3 - Crear Empresa (creacion de entidad principal)
+  â”Œ
+  â”‚ 'randomInt set: 7052'
+  â””
+  POST http://localhost:8080/api/empresas/registrar [200 OK, 713B, 15ms]
+  â”Œ
+  â”‚ 'Create Empresa status: 200'
+  â”‚ 'Body: {"id":8,"categoriaId":5,"nombre":"Demo S.A.","c
+  â”‚ odigoEmpresa":"DEMO-PS-7052","empleados":[1],"ubicacio
+  â”‚ n":"Santiago","descripcion":"Empresa demo creada por l
+  â”‚ a colecciÃ³n","status":"inactive","createdAt":"2025-12-
+  â”‚ 21T20:38:28.5907735","updatedAt":"2025-12-21T20:38:28.
+  â”‚ 5907735","deletedAt":null}'
+  â””
+  âˆš  Create Empresa OK
+
+â†’ 4 - Crear Usuario (relaciÃ³n empresas-usuarios)
+  POST http://localhost:8080/api/usuarios/registerUser [500 Internal Server Error, 539B, 91ms]
+  â”Œ
+  â”‚ 'Create User status: 500'
+  â”‚ 'Body: {"timestamp":"2025-12-21T23:38:28.761+00:00","s
+  â”‚ tatus":500,"error":"Internal Server Error","path":"/ap
+  â”‚ i/usuarios/registerUser"}'
+  â””
+  1. Create User 200/201
+
+â†’ 5 - Crear Riesgo (entidad Mongo)
+  POST http://localhost:8080/api/riesgos [200 OK, 780B, 13ms]
+  â”Œ
+  â”‚ 'Create Riesgo status: 200'
+  â”‚ 'Body: {"id":"694884f4064dadf9fe0425f9","empresaId":8,
+  â”‚ "titulo":"Riesgo demo flujo","descripcion":"Prueba flu
+  â”‚ jo crear","categoria":"cumplimiento","probabilidad":"a
+  â”‚ lta","impacto":"alto","nivelRiesgo":"alto","medidasMit
+  â”‚ igacion":null,"responsable":null,"estado":null,"create
+  â”‚ dAt":"2025-12-21T20:38:28.8387749","updatedAt":"2025-1
+  â”‚ 2-21T20:38:28.8387749","deletedAt":null}'
+  â””
+  âˆš  Create Riesgo 200
+
+â†’ 6 - Listar Riesgos (filtros y paginaciÃ³n)
+  GET http://localhost:8080/api/riesgos?page=0&size=5&empresaId=8 [200 OK, 3.64kB, 11ms]
+  â”Œ
+  â”‚ 'List Riesgos status: 200'
+  â”‚ 'Body: [{"id":"691bf170bc084de663b71898","empresaId":1
+  â”‚ ,"titulo":"Riesgo de fuga de datos","descripcion":"Pos
+  â”‚ ible fuga por accesos no autorizados.","categoria":"cu
+  â”‚ mplimiento","probabilidad":"alta","impacto":"alto","ni
+  â”‚ velRiesgo":"alto","medidasMitigacion":"Implementar DLP
+  â”‚  y Capacitar empleados","responsable":1,"estado":"abie
+  â”‚ rto","createdAt":"2025-12-21T20:38:28.9177738","update
+  â”‚ dAt":"2025-12-21T20:38:28.9177738","deletedAt":null},{
+  â”‚ "id":"69486c90064dadf9fe0425f1","empresaId":1,"titulo"
+  â”‚ :"Riesgo demo","descripcion":"Demo de riesgo para la p
+  â”‚ resentaciÃ³n","categoria":"compliance","probabilidad":"
+  â”‚ media","impacto":"medio","nivelRiesgo":"Medio","medida
+  â”‚ sMitigacion":null,"responsable":null,"estado":null,"cr
+  â”‚ eatedAt":"2025-12-21T18:54:24.113","updatedAt":"2025-1
+  â”‚ 2-21T18:54:24.113","deletedAt":null},{"id":"69486ea206
+  â”‚ 4dadf9fe0425f2","empresaId":1,"titulo":"Riesgo demo","
+  â”‚ descripcion":"Demo de riesgo para la presentaciÃ³n","ca
+  â”‚ tegoria":"compliance","probabilidad":"media","impacto"
+  â”‚ :"medio","nivelRiesgo":"Medio","medidasMitigacion":nul
+  â”‚ l,"responsable":null,"estado":null,"createdAt":"2025-1
+  â”‚ 2-21T19:03:14.174","updatedAt":"2025-12-21T19:03:14.17
+  â”‚ 4","deletedAt":null},{"id":"69486eae064dadf9fe0425f3",
+  â”‚ "empresaId":1,"titulo":"Riesgo demo","descripcion":"De
+  â”‚ mo","categoria":"compliance","probabilidad":"media","i
+  â”‚ mpacto":"medio","nivelRiesgo":"Medio","medidasMitigaci
+  â”‚ on":null,"responsable":null,"estado":null,"createdAt":
+  â”‚ "2025-12-21T19:03:26.296","updatedAt":"2025-12-21T19:0
+  â”‚ 3:26.296","deletedAt":null},{"id":"6948708c064dadf9fe0
+  â”‚ 425f4","empresaId":1,"titulo":"Riesgo demo","descripci
+  â”‚ on":"Demo de riesgo para la presentaciÃ³n","categoria":
+  â”‚ "compliance","probabilidad":"media","impacto":"medio",
+  â”‚ "nivelRiesgo":"Medio","medidasMitigacion":null,"respon
+  â”‚ sable":null,"estado":null,"createdAt":"2025-12-21T19:1
+  â”‚ 1:24.512","updatedAt":"2025-12-21T19:11:24.512","delet
+  â”‚ edAt":null},{"id":"6948713d064dadf9fe0425f5","empresaI
+  â”‚ d":1,"titulo":"Riesgo demo","descripcion":"Demo de rie
+  â”‚ sgo para la presentaciÃ³n","categoria":"compliance","pr
+  â”‚ obabilidad":"media","impacto":"medio","nivelRiesgo":"M
+  â”‚ edio","medidasMitigacion":null,"responsable":null,"est
+  â”‚ ado":null,"createdAt":"2025-12-21T19:14:21.22","update
+  â”‚ dAt":"2025-12-21T19:14:21.22","deletedAt":null},{"id":
+  â”‚ "69487149064dadf9fe0425f6","empresaId":1,"titulo":"Rie
+  â”‚ sgo demo","descripcion":"Demo","categoria":"cumplimien
+  â”‚ to","probabilidad":"media","impacto":"medio","nivelRie
+  â”‚ sgo":"Medio","medidasMitigacion":null,"responsable":nu
+  â”‚ ll,"estado":null,"createdAt":"2025-12-21T19:14:33.866"
+  â”‚ ,"updatedAt":"2025-12-21T19:14:33.866","deletedAt":nul
+  â”‚ l},{"id":"69488489064dadf9fe0425f7","empresaId":1,"tit
+  â”‚ ulo":"Riesgo demo","descripcion":"Demo","categoria":"c
+  â”‚ umplimiento","probabilidad":"media","impacto":"medio",
+  â”‚ "nivelRiesgo":"Medio","medidasMitigacion":null,"respon
+  â”‚ sable":null,"estado":null,"createdAt":"2025-12-21T20:3
+  â”‚ 6:41.161","updatedAt":"2025-12-21T20:36:41.161","delet
+  â”‚ edAt":null},{"id":"694884f4064dadf9fe0425f9","empresaI
+  â”‚ d":8,"titulo":"Riesgo demo flujo","descripcion":"Prueb
+  â”‚ a flujo crear","categoria":"cumplimiento","probabilida
+  â”‚ d":"alta","impacto":"alto","nivelRiesgo":"alto","medid
+  â”‚ asMitigacion":null,"responsable":null,"estado":null,"c
+  â”‚ reatedAt":"2025-12-21T20:38:28.838","updatedAt":"2025-
+  â”‚ 12-21T20:38:28.838","deletedAt":null}]'
+  â””
+  âˆš  List OK
+
+â†’ 7 - Update Riesgo (validaciÃ³n negativa)
+  PUT http://localhost:8080/api/riesgos/694884f4064dadf9fe0425f9 [200 OK, 734B, 18ms]
+  â”Œ
+  â”‚ 'Update invalid Riesgo status: 200'
+  â”‚ 'Body: {"id":"694884f4064dadf9fe0425f9","empresaId":nu
+  â”‚ ll,"titulo":null,"descripcion":null,"categoria":null,"
+  â”‚ probabilidad":null,"impacto":null,"nivelRiesgo":"","me
+  â”‚ didasMitigacion":null,"responsable":null,"estado":null
+  â”‚ ,"createdAt":"2025-12-21T20:38:29.0155213","updatedAt"
+  â”‚ :"2025-12-21T20:38:29.0155213","deletedAt":null}'
+  â””
+  2. Update should fail
+
+â†’ 8 - Update Riesgo (vÃ¡lido)
+  PUT http://localhost:8080/api/riesgos/694884f4064dadf9fe0425f9 [200 OK, 739B, 11ms]
+  â”Œ
+  â”‚ 'Update Riesgo status: 200'
+  â”‚ 'Body: {"id":"694884f4064dadf9fe0425f9","empresaId":nu
+  â”‚ ll,"titulo":null,"descripcion":null,"categoria":null,"
+  â”‚ probabilidad":null,"impacto":null,"nivelRiesgo":"medio
+  â”‚ ","medidasMitigacion":null,"responsable":null,"estado"
+  â”‚ :null,"createdAt":"2025-12-21T20:38:29.1204077","updat
+  â”‚ edAt":"2025-12-21T20:38:29.1204077","deletedAt":null}'
+  â””
+  âˆš  Update OK
+
+â†’ 9 - Get Riesgo by Id (relaciÃ³n)
+  GET http://localhost:8080/api/riesgos/694884f4064dadf9fe0425f9 [200 OK, 729B, 10ms]
+  â”Œ
+  â”‚ 'Get Riesgo status: 200'
+  â”‚ 'Body: {"id":"694884f4064dadf9fe0425f9","empresaId":nu
+  â”‚ ll,"titulo":null,"descripcion":null,"categoria":null,"
+  â”‚ probabilidad":null,"impacto":null,"nivelRiesgo":"medio
+  â”‚ ","medidasMitigacion":null,"responsable":null,"estado"
+  â”‚ :null,"createdAt":"2025-12-21T20:38:29.12","updatedAt"
+  â”‚ :"2025-12-21T20:38:29.12","deletedAt":null}'
+  â””
+  âˆš  Get Riesgo OK
+
+â†’ 10 - Delete Riesgo (eliminaciÃ³n y manejo relaciones)
+  DELETE http://localhost:8080/api/riesgos/694884f4064dadf9fe0425f9 [204 No Content, 371B, 13ms]
+  â”Œ
+  â”‚ 'Delete Riesgo status: 204'
+  â”‚ 'Body: '
+  â””
+  âˆš  Delete OK or NoContent
+
+â†’ 11 - Crear Politica (lÃ³gica de negocio ejemplo)
+  POST http://localhost:8080/api/ollama/politica/crear [400 Bad Request, 461B, 11ms]
+  â”Œ
+  â”‚ 'Crear Politica status: 400'
+  â”‚ 'Body: Error al crear la polÃ­tica: La empresa debe est
+  â”‚ ar activa.'
+  â””
+  âˆš  Crear Politica OK or 200
+
+â†’ 12 - Generar Documento LLM (ejemplo)
+  POST http://localhost:8080/api/llm/generateDocument [404 Not Found, 543B, 11ms]
+  â”Œ
+  â”‚ 'GenerateDoc status: 404'
+  â”‚ 'Body: {"timestamp":"2025-12-21T23:38:29.516+00:00","s
+  â”‚ tatus":404,"error":"Not Found","path":"/api/llm/genera
+  â”‚ teDocument"}'
+  â””
+  âˆš  GenerateDoc OK or 404 if not implemented
+
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â” 
+â”‚                         â”‚          executed â”‚            failed â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚              iterations â”‚                 1 â”‚                 0 â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚                requests â”‚                12 â”‚                 0 â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚            test-scripts â”‚                12 â”‚                 0 â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚      prerequest-scripts â”‚                 1 â”‚                 0 â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚              assertions â”‚                12 â”‚                 2 â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚ total run duration: 1337ms                                      â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚ total data received: 5.64kB (approx)                            â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚ average response time: 26ms [min: 10ms, max: 107ms, s.d.: 32ms] â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+
+  #  failure         detail
+
+ 1.  AssertionError  Create User 200/201
+                     expected 500 to be one of [ 200, 201 ]
+                     at assertion:0 in test-script
+                     inside "4 - Crear Usuario (relaciÃ³n empresas-usuarios)"
+
+ 2.  AssertionError  Update should fail
+                     expected 200 to be one of [ 400, 404, 422 ]
+                     at assertion:0 in test-script
+                     inside "7 - Update Riesgo (validaciÃ³n negativa)"
+
+Fase 2 ExitCode: 1
+
+Resumen para C:\Users\Duvan\Desktop\Innovacion y emprendimiento\Proyecto_para_Pep_1\Proyecto_IyE\BackendIE\reports\demo_newman_phase1.json:
+ - 1 - Login (obtener token) -> 200 (OK)
+ - 2 - Crear Categoria -> 200 (OK)
+ - 3 - Crear Empresa (creacion de entidad principal) -> 200 (OK)
+ - 4 - Crear Usuario (relaciÃ³n empresas-usuarios) -> 500 (FAIL)
+ - 5 - Crear Riesgo (entidad Mongo) -> 200 (OK)
+ - 6 - Listar Riesgos (filtros y paginaciÃ³n) -> 200 (OK)
+ - 7 - Update Riesgo (validaciÃ³n negativa) -> 200 (OK)
+ - 8 - Update Riesgo (vÃ¡lido) -> 200 (OK)
+ - 9 - Get Riesgo by Id (relaciÃ³n) -> 200 (OK)
+ - 10 - Delete Riesgo (eliminaciÃ³n y manejo relaciones) -> 204 (OK)
+ - 11 - Crear Politica (lÃ³gica de negocio ejemplo) -> 400 (FAIL)
+ - 12 - Generar Documento LLM (ejemplo) -> 404 (FAIL)
+Resumen para C:\Users\Duvan\Desktop\Innovacion y emprendimiento\Proyecto_para_Pep_1\Proyecto_IyE\BackendIE\reports\demo_newman_phase2.json:
+ - 1 - Login (obtener token) -> 200 (OK)
+ - 2 - Crear Categoria -> 200 (OK)
+ - 3 - Crear Empresa (creacion de entidad principal) -> 200 (OK)
+ - 4 - Crear Usuario (relaciÃ³n empresas-usuarios) -> 500 (FAIL)
+ - 5 - Crear Riesgo (entidad Mongo) -> 200 (OK)
+ - 6 - Listar Riesgos (filtros y paginaciÃ³n) -> 200 (OK)
+ - 7 - Update Riesgo (validaciÃ³n negativa) -> 200 (OK)
+ - 8 - Update Riesgo (vÃ¡lido) -> 200 (OK)
+ - 9 - Get Riesgo by Id (relaciÃ³n) -> 200 (OK)
+ - 10 - Delete Riesgo (eliminaciÃ³n y manejo relaciones) -> 204 (OK)
+ - 11 - Crear Politica (lÃ³gica de negocio ejemplo) -> 400 (FAIL)
+ - 12 - Generar Documento LLM (ejemplo) -> 404 (FAIL)
+Demo finalizada. Archivos: C:\Users\Duvan\Desktop\Innovacion y emprendimiento\Proyecto_para_Pep_1\Proyecto_IyE\BackendIE\reports\demo_newman_phase1.json , C:\Users\Duvan\Desktop\Innovacion y emprendimiento\Proyecto_para_Pep_1\Proyecto_IyE\BackendIE\reports\demo_newman_phase2.json
+
+=== FASE 3: Secuencia robusta (10 requests mayormente GET) ===
+Resumen Fase 3 (robusta):
+ - actuator/health -> 503 (FAIL)
+ - Listar Categorias DTO -> 200 (OK)
+ - Listar Todas Categorias -> 200 (OK)
+ - Listar Empresas Resumen -> 200 (OK)
+ - Listar Usuarios -> 200 (OK)
+ - Listar Riesgos -> 200 (OK)
+ - Crear Riesgo -> 200 (OK)
+ - Listar Regulaciones -> 200 (OK)
+ - Listar OllamaResponses -> 200 (OK)
+ - Listar Auditorias -> 200 (OK)
+Fase 3 JSON: C:\Users\Duvan\Desktop\Innovacion y emprendimiento\Proyecto_para_Pep_1\Proyecto_IyE\BackendIE\reports\demo_manual_phase_success.json
+Demo finalizada. Archivos: C:\Users\Duvan\Desktop\Innovacion y emprendimiento\Proyecto_para_Pep_1\Proyecto_IyE\BackendIE\reports\demo_newman_phase1.json , C:\Users\Duvan\Desktop\Innovacion y emprendimiento\Proyecto_para_Pep_1\Proyecto_IyE\BackendIE\reports\demo_newman_phase2.json, C:\Users\Duvan\Desktop\Innovacion y emprendimiento\Proyecto_para_Pep_1\Proyecto_IyE\BackendIE\reports\demo_manual_phase_success.json
+PS C:\Users\Duvan\Desktop\Innovacion y emprendimiento\Proyecto_para_Pep_1\Proyecto_IyE\BackendIE>

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 
 @Service
 @RequiredArgsConstructor
@@ -100,32 +102,63 @@ public class RiesgoService {
             throw new IllegalArgumentException("No se encontró documentación asociada a las políticas seleccionadas.");
         }
 
-        // 3️⃣ Construcción del prompt para Ollama
-        String prompt = """
-            Actúa como un Analista de Riesgos experto en cumplimiento normativo y gestión empresarial.
-            Tu tarea es identificar y clasificar posibles riesgos dentro de la empresa "%s",
-            usando la siguiente documentación interna (políticas, protocolos y procedimientos):
-
-            %s
-
-            Formatea tu respuesta con los siguientes delimitadores EXACTOS:
-            ::RIESGOS_OPERATIVOS:: [Lista separada por ;;]
-            ::RIESGOS_FINANCIEROS:: [Lista separada por ;;]
-            ::RIESGOS_ESTRATEGICOS:: [Lista separada por ;;]
-            ::RIESGOS_CUMPLIMIENTO:: [Lista separada por ;;]
-            ::RECOMENDACIONES_GENERALES:: [Texto]
-            ::END_RIESGOS::
-            """.formatted(empresa.getNombre(), contexto);
+        // 3️⃣ Construcción del prompt para Ollama - pedir JSON estructurado con scores
+        String prompt = String.format(
+                "Actúa como un Analista de Riesgos experto en cumplimiento normativo y gestión empresarial.\n" +
+                "Tu tarea es identificar y clasificar posibles riesgos dentro de la empresa '%s', usando la siguiente documentación interna (políticas, protocolos y procedimientos):\n\n%s\n\n" +
+                "Devuélveme un JSON válido con la estructura: {\"riesgos\": [ { \"categoria\": \"OPERATIVO\", \"texto\": \"...\", \"score\": 0.75 }, ... ], \"recomendaciones\": \"texto\" }\n" +
+                "Los scores deben estar en el rango 0.0 a 1.0 (0 = sin riesgo, 1 = riesgo máximo). Responde sólo con el JSON (sin texto adicional).",
+                empresa.getNombre(), contexto.toString());
 
         // 4️⃣ Llamada al modelo Ollama
         String respuesta = ollamaChatModel.call(prompt);
 
-        // 5️⃣ Parseo y guardado de los riesgos generados
+        // 5️⃣ Intentar parsear como JSON y guardar riesgos con score. Si falla, fallback al parseo por etiquetas.
+        ObjectMapper mapper = new ObjectMapper();
+        boolean parsedJson = false;
         try {
-            parseAndSaveRiesgos(respuesta, empresaId, usuarioId);
+            JsonNode root = mapper.readTree(respuesta);
+            if (root.has("riesgos") && root.get("riesgos").isArray()) {
+                for (JsonNode node : root.get("riesgos")) {
+                    String categoria = node.has("categoria") ? node.get("categoria").asText() : "operativo";
+                    String texto = node.has("texto") ? node.get("texto").asText() : "";
+                    double score = node.has("score") ? node.get("score").asDouble() : 0.0;
+
+                    String nivel;
+                    if (score >= 0.7) nivel = "alto";
+                    else if (score >= 0.4) nivel = "medio";
+                    else nivel = "bajo";
+
+                    Riesgo r = new Riesgo(
+                            empresaId,
+                            texto.length() > 50 ? texto.substring(0, 50) + "..." : texto,
+                            texto,
+                            categoria.toLowerCase(),
+                            "media",
+                            "medio",
+                            nivel,
+                            "Evaluar e implementar medidas preventivas.",
+                            usuarioId,
+                            "abierto"
+                    );
+                    r.setCreatedAt(LocalDateTime.now());
+                    riesgoRepository.save(r);
+                }
+                parsedJson = true;
+            }
         } catch (Exception e) {
-            System.err.println("Error crítico al parsear y guardar los riesgos generados por Ollama: " + e.getMessage());
-            e.printStackTrace();
+            // Ignore JSON parse errors and fallback
+            parsedJson = false;
+        }
+
+        if (!parsedJson) {
+            // Fallback: parseo por secciones antiguas
+            try {
+                parseAndSaveRiesgos(respuesta, empresaId, usuarioId);
+            } catch (Exception e) {
+                System.err.println("Error crítico al parsear y guardar los riesgos generados por Ollama: " + e.getMessage());
+                e.printStackTrace();
+            }
         }
 
         // 6️⃣ Registro de la interacción (log)
@@ -134,7 +167,6 @@ public class RiesgoService {
 
         return ollamaResponseRepository.save(ollamaResponse);
     }
-
 
     /**
      * Helper: parsea los bloques ::RIESGOS_...:: y los guarda en MongoDB

@@ -1,0 +1,862 @@
+{
+	"info": {
+		"_postman_id": "36028bd9-2f4e-40aa-8e21-1531d3e45beb",
+		"name": "BackendIE - Full Demo Collection (validated)",
+		"description": "Colección validada: los scripts automáticos para setear variables fueron removidos para que el usuario gestione tokens/variables manualmente. Se añadieron requests para entrenamiento.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31854593"
+	},
+	"item": [
+		{
+			"name": "1 - Login (obtener token)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var json = {};",
+							"try { json = pm.response.json(); } catch(e) { }",
+							"if (json && json.token) { pm.environment.set('token', json.token); }",
+							"if (json && json.refreshToken) { pm.environment.set('refreshToken', json.refreshToken); }",
+							"pm.test('login: token presente', function() { pm.expect(json.token).to.exist; });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"email\": \"{{LOGIN_EMAIL}}\", \"password\": \"{{LOGIN_PASSWORD}}\"}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/usuarios/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"usuarios",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2 - Crear Categoria",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var json = {};",
+							"try { json = pm.response.json(); } catch(e) {}",
+							"if (json && (json.id || json._id)) { pm.environment.set('categoriaId', json.id || json._id); }",
+							"pm.test('categoria creada o devuelta', function() { pm.expect(json).to.be.an('object'); });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"nombre\": \"DemoCategoria\", \"descripcion\": \"Categoria demo para pruebas\"}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/categorias/crear",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"categorias",
+						"crear"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3 - Crear Empresa (creacion de entidad principal)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Genera randInt si no existe para evitar colisiones en emails/codigos",
+							"if (!pm.environment.get('randInt')) { pm.environment.set('randInt', Math.floor(Math.random()*100000).toString()); }"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var json = {};",
+							"try { json = pm.response.json(); } catch(e) {}",
+							"if (json && (json.id || json._id)) { pm.environment.set('empresaId', json.id || json._id); }",
+							"if (json && json.admin) { pm.environment.set('adminId', json.admin); }",
+							"pm.test('empresa creada', function() { pm.expect(json.id || json._id).to.exist; });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"admin\": {{adminId}}, \"categoriaId\": {{categoriaId}}, \"nombre\": \"Demo S.A.\", \"codigoEmpresa\": \"DEMO-PS-{{randInt}}\", \"ubicacion\": \"Santiago\", \"descripcion\": \"Empresa demo creada por la colección\" }"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/empresas/registrar",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"empresas",
+						"registrar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4 - Crear Usuario (relacion empresas-usuarios)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Asegura randInt para email único",
+							"if (!pm.environment.get('randInt')) { pm.environment.set('randInt', Math.floor(Math.random()*100000).toString()); }"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var json = {};",
+							"try { json = pm.response.json(); } catch(e) {}",
+							"if (json && (json.id || json._id)) { pm.environment.set('usuarioId', json.id || json._id); }",
+							"pm.test('usuario creado', function() { pm.expect(json).to.be.an('object'); });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"empresaId\": {{empresaId}}, \"nombre\": \"Usuario Demo\", \"email\": \"usuario.demo+{{randInt}}@example.com\", \"password\": \"password123\", \"rol\": \"complianceofficer\", \"adminId\": {{adminId}} }"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/usuarios/registerUser",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"usuarios",
+						"registerUser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5 - Crear Riesgo (entidad Mongo)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var json = {};",
+							"try { json = pm.response.json(); } catch(e) {}",
+							"if (json && (json.id || json._id)) { pm.environment.set('riesgoId', json.id || json._id); }",
+							"pm.test('riesgo creado', function() { pm.expect(json).to.be.an('object'); });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"empresaId\": {{empresaId}}, \"titulo\": \"Riesgo demo flujo\", \"descripcion\": \"Prueba flujo crear\", \"categoria\": \"cumplimiento\", \"probabilidad\": \"alta\", \"impacto\": \"alto\", \"nivelRiesgo\": \"alto\" }"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/riesgos",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"riesgos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "6 - Listar Riesgos (filtros y paginacion)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/riesgos?page=0&size=5&empresaId={{empresaId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"riesgos"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "5"
+						},
+						{
+							"key": "empresaId",
+							"value": "{{empresaId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "7 - Update Riesgo (validacion negativa)",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"id\": \"invalid-id\", \"nivelRiesgo\": \"\" }"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/riesgos/{{riesgoId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"riesgos",
+						"{{riesgoId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "8 - Update Riesgo (valido)",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"nivelRiesgo\": \"medio\" }"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/riesgos/{{riesgoId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"riesgos",
+						"{{riesgoId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "9 - Get Riesgo by Id (relacion)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/riesgos/{{riesgoId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"riesgos",
+						"{{riesgoId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "10 - Delete Riesgo (eliminacion y manejo relaciones)",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/riesgos/{{riesgoId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"riesgos",
+						"{{riesgoId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "11 - Crear Politica (logica de negocio ejemplo)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"empresaId\": {{empresaId}}, \"usuarioId\": {{usuarioId}}, \"pregunta\": \"¿Cómo mejorar la gestión de riesgos?\" }"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/ollama/politica/crear",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"ollama",
+						"politica",
+						"crear"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "12 - Generar Auditoria (Ollama) - ejemplo",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"empresaId\": {{empresaId}}, \"tipo\": \"sanitaria\", \"objetivo\": \"Revisión inicial\", \"auditorLiderId\": 1, \"idsDePoliticasAEvaluar\": [] }"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/ollama/crearAuditoria",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"ollama",
+						"crearAuditoria"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TRAINING - Start trainer (ejecuta script python)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/training/start?labelMethod=from_file&model=logreg",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"training",
+						"start"
+					],
+					"query": [
+						{
+							"key": "labelMethod",
+							"value": "from_file"
+						},
+						{
+							"key": "model",
+							"value": "logreg"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ML - Start training job (async)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/ml/train?empresaId={{empresaId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"ml",
+						"train"
+					],
+					"query": [
+						{
+							"key": "empresaId",
+							"value": "{{empresaId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ML - Upload document (multipart/form-data)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "C:\\Users\\Duvan\\Desktop\\Innovacion y emprendimiento\\Pruebas_PEP_1_Postman\\Listado_de_empresas_multadas_por_infracciones_relacionadas_al_trabajo_de_niños_niñas_y_adolescentes_NNA_Segundo_semestre_2024.pdf"
+						},
+						{
+							"key": "empresaId",
+							"value": "{{empresaId}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/ml/upload",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"ml",
+						"upload"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register Admin (crear administrador)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get('randInt')) { pm.environment.set('randInt', Math.floor(Math.random()*100000).toString()); }"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var json={};",
+							"try{ json = pm.response.json(); }catch(e){};",
+							"if(json && (json.id||json._id)) pm.environment.set('adminId', json.id||json._id);",
+							"pm.test('admin created', function(){ pm.expect(pm.response.code).to.be.oneOf([200,201]); });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"nombre\": \"Admin Demo\", \"email\": \"admin.demo+{{randInt}}@example.com\", \"password\": \"adminpass123\" }"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/usuarios/registerAdmin",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"usuarios",
+						"registerAdmin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register User (completo)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get('randInt')) { pm.environment.set('randInt', Math.floor(Math.random()*100000).toString()); }"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var json={};",
+							"try{ json=pm.response.json(); }catch(e){};",
+							"if(json && (json.id||json._id)) pm.environment.set('usuarioId', json.id||json._id);",
+							"pm.test('registerUser: ok', function(){ pm.expect(pm.response.code).to.be.oneOf([200,201]); });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"empresaId\": {{empresaId}}, \"nombre\": \"Usuario Demo Registro\", \"email\": \"new.user+{{randInt}}@example.com\", \"password\": \"password123\", \"rol\": \"complianceofficer\", \"adminId\": {{adminId}} }"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/usuarios/registerUser",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"usuarios",
+						"registerUser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ML - Listar documentos (por empresa)",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/ml/list?empresaId={{empresaId}}",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"ml",
+						"list"
+					],
+					"query": [
+						{
+							"key": "empresaId",
+							"value": "{{empresaId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ML - NER (extraccion de entidades)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var json={}; try{ json=pm.response.json(); }catch(e){}; pm.test('ner: ok', function(){ pm.expect(pm.response.code).to.be.oneOf([200]); });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"text\": \"Inspección del local detectó incumplimiento en higiene y sanción administrativa\" }"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/ml/ner",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"ml",
+						"ner"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ML - Predict (clasificacion de riesgo)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var json={}; try{ json=pm.response.json(); }catch(e){}; if(json && json.riesgoId) pm.environment.set('riesgoId', json.riesgoId); pm.test('predict: ok', function(){ pm.expect(pm.response.code).to.be.oneOf([200]); });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"text\": \"El establecimiento no registra control de temperatura en cadena de frío y ha sido sancionado antes\", \"empresaId\": {{empresaId}}, \"usuarioId\": {{usuarioId}} }"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/ml/predict",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"ml",
+						"predict"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ML - Classify (usar ids de politicas)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var json={}; try{ json=pm.response.json(); }catch(e){}; pm.test('classify: ok', function(){ pm.expect(pm.response.code).to.be.oneOf([200]); });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"empresaId\": {{empresaId}}, \"usuarioId\": {{usuarioId}}, \"idsDePoliticas\": [] }"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/ml/classify",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"ml",
+						"classify"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "empresaId",
+			"value": "1"
+		},
+		{
+			"key": "riesgoId",
+			"value": "1"
+		}
+	]
+}

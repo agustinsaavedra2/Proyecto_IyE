@@ -1,0 +1,10 @@
+# Evita  subir archivos innecesarios al contexto de build
+node_modules
+npm-debug.log
+yarn-error.log
+pnpm-lock.yaml
+.git
+.gitignore
+.DS_Store
+.next/cache
+.env*

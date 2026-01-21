@@ -1,0 +1,13 @@
+{
+  "createdAt" : "2025-12-23T22:29:08.426039700",
+  "empresaId" : 1,
+  "lexicon" : {
+    "incumplimiento" : 10,
+    "riesgo" : 6,
+    "inspeccion" : 3,
+    "multa" : 7,
+    "no cumple" : 5,
+    "higiene" : 4,
+    "sancion" : 8
+  }
+}

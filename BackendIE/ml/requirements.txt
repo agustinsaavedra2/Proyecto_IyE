@@ -1,0 +1,11 @@
+requests
+PyPDF2
+sentence-transformers
+scikit-learn
+xgboost
+pandas
+numpy
+joblib
+pdfminer.six
+fastapi
+uvicorn

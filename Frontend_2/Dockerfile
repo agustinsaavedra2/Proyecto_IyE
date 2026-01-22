@@ -6,7 +6,7 @@ WORKDIR /app
 # Copiamos sólo los manifiestos primero para cachear instalaciones
 COPY package*.json ./
 
-# Instalar dependencias (usa npm ci si existe package-lock.json; si no, npm install)
+# Instalar dependencias
 RUN if [ -f package-lock.json ]; then \
       npm ci --no-audit --no-fund; \
     else \
@@ -20,7 +20,14 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-# Construir la app
+# --- AQUÍ ESTÁ EL ARREGLO ---
+# 1. Recibimos el argumento desde docker-compose
+ARG NEXT_PUBLIC_API_URL
+# 2. Lo convertimos en variable de entorno para que el build lo vea
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+# -----------------------------
+
+# Construir la app (Ahora sí "quemará" la URL correcta en el JS)
 RUN npm run build
 
 # Etapa de runtime (producción)
@@ -30,18 +37,14 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-# Puedes cambiar el puerto en tiempo de ejecución con -e PORT=XXXX
 ENV PORT=3000
 
 # Copiamos sólo lo necesario para ejecutar next start
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-# Copiamos node_modules construidos en la etapa anterior para evitar reinstalar
 COPY --from=builder /app/node_modules ./node_modules
 
-# Exponer el puerto por defecto de Next.js
 EXPOSE 3000
 
-# Comando de arranque: Next.js en modo producción
 CMD ["npm", "run", "start"]

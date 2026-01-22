@@ -17,7 +17,7 @@ public class RegulacionController {
     private final RegulacionService regulacionService;
 
     // Listar todas
-    @GetMapping("/")
+    @GetMapping("/all")
     public ResponseEntity<List<Regulacion>> getAll() {
         return ResponseEntity.ok(regulacionService.findAll());
     }

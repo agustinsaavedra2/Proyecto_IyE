@@ -7,7 +7,7 @@ import type { Regulacion } from '@/types/regulacion'
  */
 export async function getRegulations(): Promise<Regulacion[]> {
   // controller maps GET "/" so call the base path with trailing slash to match exactly
-  return apiFetcher('/api/regulaciones/')
+  return apiFetcher('/api/regulaciones/all')
 }
 
 export async function getRegulationById(id: string | number): Promise<Regulacion | null> {

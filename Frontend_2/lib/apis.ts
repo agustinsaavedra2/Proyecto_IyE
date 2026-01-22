@@ -43,11 +43,33 @@ export async function apiFetcher(path: string, options?: RequestInit) {
     const providedHeaders = (options && (options as any).headers) || {}
     const headers = { ...defaultHeaders, ...providedHeaders }
 
+    // Public API paths that must not carry Authorization
+    const publicPaths = [
+      '/api/usuarios/request-register',
+      '/api/usuarios/login',
+      '/api/usuarios/verify-register',
+      '/api/usuarios/complete-register',
+      '/auth/login',
+      '/auth/refresh',
+      '/auth/logout'
+    ]
+    const isPublic = publicPaths.includes(path) || path.startsWith('/actuator')
+
+    // Remove Authorization header if present but falsy/empty
+    const existingAuthKey = Object.keys(headers).find(k => k.toLowerCase() === 'authorization')
+    if (existingAuthKey) {
+      const val = headers[existingAuthKey]
+      if (!val || String(val).trim() === '' || String(val).trim().toLowerCase() === 'bearer') {
+        delete headers[existingAuthKey]
+      }
+    }
+
     // When running in the browser, automatically attach a stored JWT if present
     if (isClient) {
       try {
         const token = localStorage.getItem('token')
-        if (token && !headers['Authorization'] && !headers['authorization']) {
+        const hasAuth = Object.keys(headers).some(k => k.toLowerCase() === 'authorization')
+        if (token && !hasAuth && !isPublic) {
           headers['Authorization'] = `Bearer ${token}`
         }
       } catch (e) {

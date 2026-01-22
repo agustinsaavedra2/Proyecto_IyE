@@ -27,7 +27,7 @@ export default function CrearAuditoriaPage() {
   const [tipo, setTipo] = useState('')
   const [objetivo, setObjetivo] = useState('')
   const [auditorLiderId, setAuditorLiderId] = useState<number | ''>('')
-  const [politicaId, setPoliticaId] = useState('')
+  const [selectedPolicies, setSelectedPolicies] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<any | null>(null)
   const [companies, setCompanies] = useState<EmpresaDTO[]>([])
@@ -49,7 +49,7 @@ export default function CrearAuditoriaPage() {
   useEffect(() => {
     if (!empresaId) {
       setPolicies([])
-      setPoliticaId('')
+      setSelectedPolicies([])
       return
     }
     ;(async () => {
@@ -64,8 +64,8 @@ export default function CrearAuditoriaPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!empresaId || !tipo || !objetivo || auditorLiderId === '' || !politicaId) {
-      toast({ title: 'Completa los campos', description: 'empresaId, tipo, objetivo, auditorLiderId y politicaId son requeridos' })
+    if (!empresaId || !tipo || !objetivo || auditorLiderId === '' || selectedPolicies.length === 0) {
+      toast({ title: 'Completa los campos', description: 'empresaId, tipo, objetivo, auditorLiderId y al menos 1 política son requeridos' })
       return
     }
     setLoading(true)
@@ -75,7 +75,7 @@ export default function CrearAuditoriaPage() {
         tipo,
         objetivo,
         auditorLiderId: Number(auditorLiderId),
-        politicaId,
+        idsDePoliticasAEvaluar: selectedPolicies,
       }
       const res = await ollamaService.crearAuditoria(payload)
       // clear draft on success
@@ -98,21 +98,21 @@ export default function CrearAuditoriaPage() {
       tipo,
       objetivo,
       auditorLiderId,
-      politicaId,
+      selectedPolicies,
     }
 
     const serialized = JSON.stringify(state)
     let timer = window.setTimeout(() => {
       try {
         // if any field filled, save; otherwise remove
-        const any = [empresaId, tipo, objetivo, auditorLiderId, politicaId].some((v) => v !== '' && v !== null && v !== undefined && !(typeof v === 'string' && v.trim() === ''))
+          const any = [empresaId, tipo, objetivo, auditorLiderId, selectedPolicies.length].some((v) => v !== '' && v !== null && v !== undefined && !(typeof v === 'string' && v.trim() === '') && !(typeof v === 'number' && v === 0))
         if (any) localStorage.setItem(key, serialized)
         else localStorage.removeItem(key)
       } catch (e) {}
     }, 400)
 
     return () => window.clearTimeout(timer)
-  }, [empresaId, tipo, objetivo, auditorLiderId, politicaId, pathname])
+  }, [empresaId, tipo, objetivo, auditorLiderId, selectedPolicies, pathname])
 
   function handleRestoreDraft(data: any) {
     try {
@@ -120,7 +120,7 @@ export default function CrearAuditoriaPage() {
       setTipo(data.tipo ?? '')
       setObjetivo(data.objetivo ?? '')
       setAuditorLiderId(data.auditorLiderId === undefined ? '' : data.auditorLiderId)
-      setPoliticaId(data.politicaId ?? '')
+      setSelectedPolicies(data.selectedPolicies ?? [])
     } catch (e) {}
   }
 
@@ -132,7 +132,7 @@ export default function CrearAuditoriaPage() {
           <DraftBackButton draftKey={`draft:${pathname}`} />
         </div>
         {/* show alert when at least one field contains a value */}
-        <FormDirtyAlert dirty={isFilled(empresaId) || isFilled(tipo) || isFilled(objetivo) || isFilled(auditorLiderId) || isFilled(politicaId)} />
+        <FormDirtyAlert dirty={isFilled(empresaId) || isFilled(tipo) || isFilled(objetivo) || isFilled(auditorLiderId) || selectedPolicies.length > 0} />
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="empresa">Empresa</Label>
@@ -167,13 +167,27 @@ export default function CrearAuditoriaPage() {
           </div>
 
           <div>
-            <Label htmlFor="politicaId">Política a evaluar</Label>
-            <select id="politicaId" className="input" value={politicaId} onChange={(e) => setPoliticaId(e.target.value)}>
-              <option value="" disabled>{policies.length === 0 ? 'Seleccione empresa primero' : 'Seleccione una política'}</option>
-              {policies.map((p) => (
-                <option key={p.id} value={p.id}>{p.titulo}</option>
-              ))}
-            </select>
+            <Label>Políticas a evaluar (selecciona una o más)</Label>
+            {policies.length === 0 ? (
+              <div className="text-sm text-muted-foreground">Seleccione empresa primero</div>
+            ) : (
+              <div className="grid gap-2">
+                {policies.map((p) => (
+                  <label key={p.id} className="inline-flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      value={p.id}
+                      checked={selectedPolicies.includes(p.id)}
+                      onChange={(e) => {
+                        const val = e.target.value
+                        setSelectedPolicies((s) => (e.target.checked ? [...s, val] : s.filter((x) => x !== val)))
+                      }}
+                    />
+                    <span className="text-sm">{p.titulo}</span>
+                  </label>
+                ))}
+              </div>
+            )}
           </div>
 
           <Button type="submit" className="w-full" disabled={loading}>

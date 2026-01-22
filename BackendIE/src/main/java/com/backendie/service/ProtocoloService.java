@@ -134,4 +134,9 @@ public class ProtocoloService {
 
         return text.substring(s, e).trim();
     }
+
+
+    public List<Protocolo> getAllProtocolos() {
+        return protocoloRepository.findAll();
+    }
 }

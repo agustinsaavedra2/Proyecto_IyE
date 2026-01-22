@@ -28,4 +28,14 @@ public class ProtocoloController {
             return ResponseEntity.badRequest().body("Error al crear el protocolo: " + e.getMessage());
         }
     }
+
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllProtocolos() {
+        try {
+            return ResponseEntity.ok(protocoloService.getAllProtocolos());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al obtener los protocolos: " + e.getMessage());
+        }
+    }
 }

@@ -28,4 +28,13 @@ public class ProcedimientoController {
             return ResponseEntity.badRequest().body("Error al crear el procedimiento: " + e.getMessage());
         }
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllProcedimientos() {
+        try {
+            return ResponseEntity.ok(procedimientoService.getAllProcedimientos());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al obtener los procedimientos: " + e.getMessage());
+        }
+    }
 }

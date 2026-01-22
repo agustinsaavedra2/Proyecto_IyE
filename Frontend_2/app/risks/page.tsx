@@ -1,6 +1,5 @@
 "use client"
 
-import { DashboardNav } from "@/components/dashboard/dashboard-nav"
 import { RisksList } from "@/components/risks/risks-list"
 import { Button } from '@/components/ui/button'
 import BackButton from '@/components/ui/back-button'
@@ -11,7 +10,6 @@ export default function RisksPage() {
   const router = useRouter()
   return (
     <div className="min-h-screen bg-background">
-      <DashboardNav />
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8 flex items-start justify-between">

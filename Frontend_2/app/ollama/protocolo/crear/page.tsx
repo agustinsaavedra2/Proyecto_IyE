@@ -17,6 +17,7 @@ import type { EmpresaDTO } from '@/types/empresa'
 import userService from '@/lib/userService'
 import politicaService from '@/lib/politicaService'
 import type { PoliticaDTO } from '@/types/politica'
+import { useSelection } from '@/components/dashboard/selection-context'
 
 export default function CrearProtocoloPage() {
   const router = useRouter()
@@ -31,6 +32,7 @@ export default function CrearProtocoloPage() {
   const [users, setUsers] = useState<EmpresaDTO[]>([])
   const [policies, setPolicies] = useState<PoliticaDTO[]>([])
   const pathname = usePathname()
+  const selection = useSelection()
 
   const isFilled = (v: any) => v !== '' && v !== null && v !== undefined && !(typeof v === 'string' && v.trim() === '')
 
@@ -44,6 +46,14 @@ export default function CrearProtocoloPage() {
       }
     })()
   }, [])
+
+  useEffect(() => {
+    // prefill from header selection
+    try {
+      if (selection && selection.empresaId && !empresaId) setEmpresaId(selection.empresaId)
+      if (selection && selection.usuarioId && !usuarioId) setUsuarioId(selection.usuarioId)
+    } catch (e) {}
+  }, [selection])
 
   useEffect(() => {
     if (!empresaId) {

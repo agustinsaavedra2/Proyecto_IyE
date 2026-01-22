@@ -13,8 +13,8 @@ export interface CrearAuditoria {
   tipo: string
   objetivo: string
   auditorLiderId: number
-  // El backend espera UNA sola política como id (string, guardada en Mongo).
-  politicaId: string
+  // En la nueva versión el backend acepta una lista de ids de políticas a evaluar
+  idsDePoliticasAEvaluar: string[]
 }
 
 // No default export for types

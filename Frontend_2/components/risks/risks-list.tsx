@@ -10,11 +10,11 @@ import { Search, Plus, Sparkles } from "lucide-react"
 import { motion } from "framer-motion"
 import { LoadingSkeleton } from "@/components/ui/loading-skeleton"
 import apiFetcher from '@/lib/apis'
+import riesgoService from "@/lib/riesgoService"
 
 export function RisksList() {
   const [searchQuery, setSearchQuery] = useState("")
-  const { data: risks, error, isLoading } = useSWR('/api/riesgos', apiFetcher)
-
+  const { data: risks, error, isLoading } = useSWR('/api/riesgos', () => riesgoService.getRiesgos())
   if (isLoading) {
     return <LoadingSkeleton count={5} />
   }

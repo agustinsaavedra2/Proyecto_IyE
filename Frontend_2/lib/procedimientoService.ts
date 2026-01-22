@@ -9,6 +9,13 @@ export async function crearProcedimiento(data: CrearPPP): Promise<Procedimiento>
   })
 }
 
+export async function getAllProcedimientos(): Promise<Procedimiento[]> {
+  return apiFetcher('/api/ollama/procedimiento/all', {
+    method: 'GET',
+  })
+}
+
 export default {
   crearProcedimiento,
+  getAllProcedimientos,
 }

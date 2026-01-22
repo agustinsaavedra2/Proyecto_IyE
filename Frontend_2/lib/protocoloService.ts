@@ -8,6 +8,13 @@ export async function crearProtocolo(data: CrearPPP): Promise<Protocolo> {
   })
 }
 
+export async function getAllProtocolos(): Promise<Protocolo[]> {
+  return apiFetcher('/api/ollama/protocolo/all', {
+    method: 'GET',
+  })
+}
+
 export default {
   crearProtocolo,
+  getAllProtocolos,
 }

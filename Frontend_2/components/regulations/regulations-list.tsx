@@ -13,10 +13,11 @@ import { motion } from "framer-motion"
 import { LoadingSkeleton } from "@/components/ui/loading-skeleton"
 import apiFetcher from '@/lib/apis'
 import categoriaService from '@/lib/categoriaService'
+import regulationService from "@/lib/regulationService"
 
 export function RegulationsList() {
   const [searchQuery, setSearchQuery] = useState("")
-  const { data: regulations, error, isLoading, mutate } = useSWR('/api/regulaciones', apiFetcher)
+  const { data: regulations, error, isLoading, mutate } = useSWR('/api/regulaciones/all', () => regulationService.getRegulations())
   const searchParams = useSearchParams()
   const router = useRouter()
 

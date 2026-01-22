@@ -1,6 +1,5 @@
 "use client"
 
-import { DashboardNav } from "@/components/dashboard/dashboard-nav"
 import { StatsCards } from "@/components/dashboard/stats-cards"
 import { RecentActivity } from "@/components/dashboard/recent-activity"
 import { QuickActions } from "@/components/dashboard/quick-actions"
@@ -12,7 +11,6 @@ export default function DashboardPage() {
   const router = useRouter()
   return (
     <div className="min-h-screen bg-background">
-      <DashboardNav />
 
       <main className="container mx-auto px-4 py-8 space-y-8">
         <div className="flex items-start justify-between">

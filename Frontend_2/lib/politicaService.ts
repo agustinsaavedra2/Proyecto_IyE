@@ -10,7 +10,7 @@ export async function crearPolitica(data: CrearPPP): Promise<PoliticaEmpresa> {
 }
 
 export async function getPoliticasPorEmpresa(empresaId: number): Promise<PoliticaDTO[]> {
-  return apiFetcher(`/api/politica/politicaempresa?empresaId=${encodeURIComponent(String(empresaId))}`)
+  return apiFetcher(`/api/ollama/politica/politicaempresa?empresaId=${encodeURIComponent(String(empresaId))}`)
 }
 
 export default {

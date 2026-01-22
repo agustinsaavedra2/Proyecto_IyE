@@ -9,7 +9,6 @@ import DraftBackButton from '@/components/ui/draft-back-button'
 import RestoreDraftPrompt from '@/components/ui/restore-draft-prompt'
 import { usePathname } from 'next/navigation'
 import FormDirtyAlert from '@/components/ui/form-dirty-alert'
-import { DashboardNav } from '@/components/dashboard/dashboard-nav'
 import { useRouter } from 'next/navigation'
 import apiFetcher from '@/lib/apis'
 
@@ -78,7 +77,6 @@ export default function CreateRegulationPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardNav />
 
       <main className="container mx-auto px-4 py-8">
         <Card className="p-6 max-w-2xl mx-auto">

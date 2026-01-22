@@ -8,7 +8,6 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import LoadingOverlay from '@/components/ui/loading-overlay'
-import { DashboardNav } from '@/components/dashboard/dashboard-nav'
 import type { UsuarioDTO } from '@/types/auth'
 import type { EmpresaDTO } from '@/types/empresa'
 
@@ -71,7 +70,6 @@ export default function UsersPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardNav />
 
       <main className="container mx-auto px-4 py-8">
           <div className="mb-8 flex items-start justify-between">

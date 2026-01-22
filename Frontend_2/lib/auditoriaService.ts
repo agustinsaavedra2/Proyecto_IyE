@@ -2,7 +2,7 @@ import apiFetcher from './apis'
 import type { Auditoria } from '../types/auditoria'
 
 export async function createAuditoria(data: Auditoria): Promise<Auditoria> {
-  return apiFetcher('/api/auditorias', {
+  return apiFetcher('/api/ollama/crearAuditoria', {
     method: 'POST',
     body: JSON.stringify(data),
   })

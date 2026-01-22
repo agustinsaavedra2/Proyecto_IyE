@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from 'react'
+import { useSelection } from '@/components/dashboard/selection-context'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -22,6 +23,7 @@ export default function CrearProcedimientoPage() {
   const pathname = usePathname()
   const [empresaId, setEmpresaId] = useState<number | ''>('')
   const [usuarioId, setUsuarioId] = useState<number | ''>('')
+  const selection = useSelection()
   const [protocoloId, setProtocoloId] = useState('')
   const [pregunta, setPregunta] = useState('')
   const [loading, setLoading] = useState(false)
@@ -39,6 +41,14 @@ export default function CrearProcedimientoPage() {
       } catch (_) {}
     })()
   }, [])
+
+  useEffect(() => {
+    // prefill from header selection if available
+    try {
+      if (selection && selection.empresaId && !empresaId) setEmpresaId(selection.empresaId)
+      if (selection && selection.usuarioId && !usuarioId) setUsuarioId(selection.usuarioId)
+    } catch (e) {}
+  }, [selection])
 
   useEffect(() => {
     if (!empresaId) {

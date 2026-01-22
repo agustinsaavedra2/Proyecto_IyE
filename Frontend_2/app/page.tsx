@@ -14,26 +14,31 @@ export default function HomePage() {
           <div className="max-w-4xl mx-auto text-center space-y-8">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/50 bg-primary/10 backdrop-blur-sm">
               <Sparkles className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-foreground">Powered by AI</span>
+              <span className="text-sm font-medium text-foreground">Poder de la AI</span>
             </div>
 
             <h1 className="text-5xl md:text-7xl font-bold text-balance">
-              Ship <span className="text-primary glow-text">Compliance</span> products that work.
+              Ship <span className="text-primary glow-text">Compliance</span> productos que funcionan.
             </h1>
 
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto text-balance">
-              The end-to-end platform for building world-class compliance management systems with AI-powered automation.
+              La plataforma integral para construir sistemas de gestión de cumplimiento de clase mundial con automatización impulsada por IA.
             </p>
 
             <div className="flex flex-wrap gap-4 justify-center">
               <Link href="/dashboard">
                 <Button size="lg" className="glow-button">
-                  Get started
+                  Comenzar
                 </Button>
               </Link>
               <Link href="/auth/register">
                 <Button size="lg" variant="outline">
-                  Sign up for free
+                  Regístrate gratis
+                </Button>
+              </Link>
+              <Link href="/auth/login">
+                <Button size="lg" variant="outline">
+                  Iniciar sesión
                 </Button>
               </Link>
             </div>

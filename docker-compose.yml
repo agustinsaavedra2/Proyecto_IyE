@@ -39,7 +39,7 @@ services:
       start_period: 5s
 
   # ----------------------------------------
-  # 3. OLLAMA (IA Generativa)
+  # 3. OLLAMA (IA Generativa - AUTO PULL)
   # ----------------------------------------
   ollama:
     image: ollama/ollama:latest
@@ -48,6 +48,28 @@ services:
       - "11434:11434"
     volumes:
       - ollama_storage:/root/.ollama
+    # --- TRUCO PARA AUTO-DESCARGAR EL MODELO ---
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        # 1. Iniciar el servidor en segundo plano
+        /bin/ollama serve &
+        pid=$!
+
+        # 2. Esperar a que el servidor responda
+        echo "⏳ Esperando a que Ollama inicie..."
+        while [ "$(ollama list | grep 'NAME')" == "" ]; do
+          sleep 1
+        done
+
+        # 3. Descargar el modelo automáticamente
+        echo "⬇️  Verificando/Descargando modelo llama3.1:8b..."
+        ollama pull llama3.1:8b
+        
+        echo "✅ Modelo listo!"
+
+        # 4. Mantener el proceso vivo
+        wait $pid
 
   # ----------------------------------------
   # 4. MICROSERVICIO IA (Python)

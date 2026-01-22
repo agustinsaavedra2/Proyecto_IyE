@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { Card } from '@/components/ui/card'
-import { DashboardNav } from '@/components/dashboard/dashboard-nav'
 import empresaService from '@/lib/empresaService'
 import LoadingOverlay from '@/components/ui/loading-overlay'
 import { Button } from '@/components/ui/button'
@@ -39,7 +38,6 @@ export default function EmpresasPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardNav />
 
       <main className="container mx-auto px-4 py-8">
           <div className="mb-8 flex items-start justify-between">

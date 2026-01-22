@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { DashboardNav } from '@/components/dashboard/dashboard-nav'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import LoadingOverlay from '@/components/ui/loading-overlay'
@@ -37,7 +36,6 @@ export default function CategoriasPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardNav />
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8 flex items-start justify-between">

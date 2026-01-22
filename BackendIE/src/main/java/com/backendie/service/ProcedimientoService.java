@@ -37,6 +37,10 @@ public class ProcedimientoService {
 
     private final EmpresaService empresaService;
 
+    public List<Procedimiento> getAllProcedimientos() {
+        return procedimientoRepository.findAll();
+    }
+
 
     public Procedimiento crearProcedimiento(Long empresaId, Long usuarioId, String protocoloId, String tema) {
         // 1️⃣ Validar empresa y usuario

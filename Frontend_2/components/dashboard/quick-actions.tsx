@@ -11,7 +11,9 @@ const actions = [
   { label: "Generate AI Audit", icon: Sparkles, href: "/auditorias/crear" },
   { label: "Register User", icon: Plus, href: "/auth/register" },
   { label: "Add Risk", icon: AlertTriangle, href: "/risks/new" },
-  { label: "New Protocol", icon: Plus, href: "/protocols/new" },
+  { label: "Protocolos", icon: FileCheck, href: "/ollama/protocolo" },
+  { label: "Procedimientos", icon: FileCheck, href: "/ollama/procedimiento" },
+  { label: "New Protocol", icon: Plus, href: "/ollama/protocolo/crear" },
 ]
 
 export function QuickActions() {

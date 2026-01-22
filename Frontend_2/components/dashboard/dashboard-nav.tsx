@@ -4,14 +4,17 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Shield, FileCheck, AlertTriangle, Sparkles, Users, Menu, Briefcase } from "lucide-react"
+import { Shield, FileCheck, FileText, List, BookOpen, AlertTriangle, Sparkles, Users, Menu, Briefcase } from "lucide-react"
 import { useState } from "react"
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: Shield },
   { href: "/regulations", label: "Regulations", icon: FileCheck },
+  { href: "/ollama/protocolo", label: "Protocolos", icon: FileText },
+  { href: "/ollama/procedimiento", label: "Procedimientos", icon: List },
+  { href: "/ollama/politica", label: "Políticas", icon: BookOpen },
   { href: "/risks", label: "Risks", icon: AlertTriangle },
-  { href: "/audits", label: "Audits", icon: Sparkles },
+  { href: "/ollama/crearAuditoria", label: "Audits", icon: Sparkles },
   { href: "/users", label: "Users", icon: Users },
   { href: "/empresas", label: "Empresas", icon: Briefcase },
 ]

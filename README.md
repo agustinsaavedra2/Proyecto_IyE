@@ -42,7 +42,7 @@ docker compose down
 ```
 
 Puertos por defecto
-- Backend: `8080` (health: http://localhost:8080/actuator/health)
+- Backend: `8080`
 - Frontend: `3000` (http://localhost:3000)
 
 Comprobaciones
@@ -61,7 +61,3 @@ Documentación adicional
 - Backend: [BackendIE](BackendIE/README.md)
 - Frontend: [Frontend_2](Frontend_2/README.md)
 
-¿Quieres que añada ejemplos de `docker-compose.override.yml` o un `BackendIE/.env.example`? Indica preferencia.
-
----
-_README preparado para subir a GitHub: más limpio, con TOC, badges y pasos directos de despliegue._
